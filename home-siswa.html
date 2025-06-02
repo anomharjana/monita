@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Menu dalam Card Box - Jarak Rapi</title>
+  <title>Menu dalam Card Box - Navigasi</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -32,14 +32,14 @@
       background: white;
       border-radius: 16px;
       box-shadow: 0 4px 12px rgba(240, 98, 146, 0.2);
-      padding: 2rem 2.5rem; /* sedikit padding lebih lega */
+      padding: 2rem 2.5rem;
       max-width: 320px;
       width: 100%;
       display: grid;
-      grid-template-columns: repeat(2, 1fr); /* kolom sama besar */
-      gap: 1.5rem 2rem; /* row-gap 1.5rem, column-gap 2rem */
-      justify-items: center; /* bikin item rata tengah kolom */
-      align-items: center; /* supaya vertikal juga rata */
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem 2rem;
+      justify-items: center;
+      align-items: center;
     }
     .menu-item {
       background: #fff0f4;
@@ -54,7 +54,8 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 110px; /* biar tinggi item sama, rapi */
+      min-height: 110px;
+      user-select: none; /* mencegah teks terpilih saat klik */
     }
     .menu-item:hover {
       transform: translateY(-3px) scale(1.05);
@@ -103,19 +104,19 @@
   </div>
 
   <div class="card-box">
-    <div class="menu-item" onclick="alert('Konfirmasi Konsumsi')">
+    <div class="menu-item" onclick="window.location.href='konfirmasi.html'">
       <img src="https://img.icons8.com/color/48/000000/checked--v1.png" alt="Konfirmasi" />
       <h3>Konfirmasi</h3>
     </div>
-    <div class="menu-item" onclick="alert('Riwayat Konsumsi')">
+    <div class="menu-item" onclick="window.location.href='riwayat.html'">
       <img src="https://img.icons8.com/color/48/000000/timeline.png" alt="Riwayat" />
       <h3>Riwayat</h3>
     </div>
-    <div class="menu-item" onclick="alert('Poin & Edukasi')">
+    <div class="menu-item" onclick="window.location.href='poin.html'">
       <img src="https://img.icons8.com/color/48/000000/medal2--v2.png" alt="Poin" />
       <h3>Poin & Edukasi</h3>
     </div>
-    <div class="menu-item" onclick="alert('Profil')">
+    <div class="menu-item" onclick="window.location.href='profil.html'">
       <img src="https://img.icons8.com/color/48/000000/user-female-circle.png" alt="Profil" />
       <h3>Profil</h3>
     </div>
