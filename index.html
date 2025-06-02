@@ -144,8 +144,8 @@
       const password = document.getElementById('password').value;
 
       if (role && username && password) {
-        alert(`Login sebagai ${role} berhasil!`);
-        // window.location.href = `/home-${role}.html`;
+        // Redirect based on role
+        window.location.href = `home-${role}.html`;
       } else {
         alert("Silakan isi semua field.");
       }
