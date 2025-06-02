@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Home | Pemantauan TTD</title>
   <style>
     * {
@@ -34,14 +34,16 @@
     }
     .menu {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 1rem;
-      justify-content: center;
+      grid-template-columns: 1fr 1fr; /* 2 kolom fixed */
+      grid-template-rows: auto auto; /* 2 baris */
+      gap: 1.5rem;
+      justify-items: center; /* agar tiap item center */
     }
     .menu-item {
       background-color: white;
       border-radius: 12px;
-      padding: 1rem;
+      padding: 1.5rem;
+      width: 160px; /* fix width supaya tidak mengecil */
       box-shadow: 0 2px 6px rgba(240, 98, 146, 0.2);
       text-align: center;
       transition: transform 0.2s, box-shadow 0.2s;
@@ -53,12 +55,14 @@
     }
     .menu-item img {
       transition: transform 0.3s ease;
+      width: 48px;
+      height: 48px;
     }
     .menu-item:hover img {
       transform: rotate(5deg);
     }
     .menu-item h3 {
-      margin-top: 0.5rem;
+      margin-top: 0.75rem;
       font-size: 1rem;
       color: #d81b60;
     }
@@ -66,12 +70,20 @@
       .logo img {
         max-width: 120px;
       }
+      .menu {
+        grid-template-columns: 1fr; /* kolom 1 untuk hp */
+        grid-template-rows: auto;
+      }
+      .menu-item {
+        width: 100%;
+        max-width: 300px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="logo">
-    <img src="https://res.cloudinary.com/djexglfns/image/upload/v1748880819/ChatGPT_Image_2_Jun_2025__23.14.30-removebg-preview_e6eyew.png" alt="Logo Aplikasi">
+    <img src="https://res.cloudinary.com/djexglfns/image/upload/v1748880819/ChatGPT_Image_2_Jun_2025__23.14.30-removebg-preview_e6eyew.png" alt="Logo Aplikasi" />
   </div>
   <div class="container">
     <div class="menu">
