@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Home | Pemantauan TTD</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body {
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
@@ -12,11 +15,17 @@
       background: #ffeef5;
       color: #333;
     }
-    header {
-      background-color: #f06292;
-      color: white;
-      padding: 1rem;
+    .logo {
       text-align: center;
+      padding: 2rem 1rem 1rem;
+    }
+    .logo img {
+      max-width: 180px;
+      height: auto;
+      transition: transform 0.3s ease;
+    }
+    .logo img:hover {
+      transform: scale(1.1);
     }
     .container {
       padding: 1.5rem;
@@ -36,10 +45,17 @@
       box-shadow: 0 2px 6px rgba(240, 98, 146, 0.2);
       text-align: center;
       transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
     }
     .menu-item:hover {
-      transform: scale(1.03);
-      box-shadow: 0 4px 10px rgba(240, 98, 146, 0.4);
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 6px 12px rgba(240, 98, 146, 0.4);
+    }
+    .menu-item img {
+      transition: transform 0.3s ease;
+    }
+    .menu-item:hover img {
+      transform: rotate(5deg);
     }
     .menu-item h3 {
       margin-top: 0.5rem;
@@ -50,14 +66,16 @@
       .menu-item {
         flex: 1 1 100%;
       }
+      .logo img {
+        max-width: 120px;
+      }
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Pemantauan TTD</h1>
-    <p>Selamat datang, silakan pilih menu</p>
-  </header>
+  <div class="logo">
+    <img src="https://res.cloudinary.com/djexglfns/image/upload/v1748880819/ChatGPT_Image_2_Jun_2025__23.14.30-removebg-preview_e6eyew.png" alt="Logo Aplikasi">
+  </div>
   <div class="container">
     <div class="menu">
       <div class="menu-item" onclick="navigate('konfirmasi')">
