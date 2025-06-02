@@ -3,80 +3,96 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Home | Pemantauan TTD</title>
+  <title>Menu dalam Card Box - Jarak Rapi</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
     body {
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      padding: 0;
+      font-family: Arial, sans-serif;
+      margin: 2rem;
       background: #ffeef5;
       color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
     .logo {
+      margin-bottom: 2rem;
       text-align: center;
-      padding: 2rem 1rem 1rem;
     }
     .logo img {
       max-width: 180px;
+      width: 100%;
       height: auto;
       transition: transform 0.3s ease;
+      cursor: pointer;
     }
     .logo img:hover {
       transform: scale(1.1);
     }
-    .container {
-      padding: 1.5rem;
-      max-width: 800px;
-      margin: auto;
-    }
-    .menu {
+    .card-box {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(240, 98, 146, 0.2);
+      padding: 2rem 2.5rem; /* sedikit padding lebih lega */
+      max-width: 320px;
+      width: 100%;
       display: grid;
-      grid-template-columns: 1fr 1fr; /* 2 kolom fixed */
-      grid-template-rows: auto auto; /* 2 baris */
-      gap: 1.5rem;
-      justify-items: center; /* agar tiap item center */
+      grid-template-columns: repeat(2, 1fr); /* kolom sama besar */
+      gap: 1.5rem 2rem; /* row-gap 1.5rem, column-gap 2rem */
+      justify-items: center; /* bikin item rata tengah kolom */
+      align-items: center; /* supaya vertikal juga rata */
     }
     .menu-item {
-      background-color: white;
+      background: #fff0f4;
       border-radius: 12px;
-      padding: 1.5rem;
-      width: 160px; /* fix width supaya tidak mengecil */
-      box-shadow: 0 2px 6px rgba(240, 98, 146, 0.2);
+      box-shadow: 0 2px 6px rgba(240, 98, 146, 0.15);
+      width: 120px;
+      padding: 0.75rem;
       text-align: center;
-      transition: transform 0.2s, box-shadow 0.2s;
       cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 110px; /* biar tinggi item sama, rapi */
     }
     .menu-item:hover {
-      transform: translateY(-5px) scale(1.05);
+      transform: translateY(-3px) scale(1.05);
       box-shadow: 0 6px 12px rgba(240, 98, 146, 0.4);
     }
     .menu-item img {
+      width: 36px;
+      height: 36px;
+      margin-bottom: 0.5rem;
       transition: transform 0.3s ease;
-      width: 48px;
-      height: 48px;
     }
     .menu-item:hover img {
       transform: rotate(5deg);
     }
     .menu-item h3 {
-      margin-top: 0.75rem;
-      font-size: 1rem;
+      margin: 0;
+      font-size: 0.85rem;
       color: #d81b60;
     }
-    @media (max-width: 600px) {
-      .logo img {
-        max-width: 120px;
+    @media (max-width: 400px) {
+      body {
+        margin: 1rem;
       }
-      .menu {
-        grid-template-columns: 1fr; /* kolom 1 untuk hp */
-        grid-template-rows: auto;
+      .card-box {
+        grid-template-columns: 1fr;
+        max-width: 140px;
+        padding: 1rem 1.5rem;
+        gap: 1.25rem 0;
       }
       .menu-item {
         width: 100%;
-        max-width: 300px;
+        min-height: auto;
+      }
+      .logo {
+        margin-bottom: 1.5rem;
+      }
+      .logo img {
+        max-width: 120px;
       }
     }
   </style>
@@ -85,31 +101,24 @@
   <div class="logo">
     <img src="https://res.cloudinary.com/djexglfns/image/upload/v1748880819/ChatGPT_Image_2_Jun_2025__23.14.30-removebg-preview_e6eyew.png" alt="Logo Aplikasi" />
   </div>
-  <div class="container">
-    <div class="menu">
-      <div class="menu-item" onclick="navigate('konfirmasi.html')">
-        <img src="https://img.icons8.com/color/48/000000/checked--v1.png" alt="Konfirmasi" />
-        <h3>Konfirmasi Konsumsi</h3>
-      </div>
-      <div class="menu-item" onclick="navigate('riwayat.html')">
-        <img src="https://img.icons8.com/color/48/000000/timeline.png" alt="Riwayat" />
-        <h3>Riwayat Konsumsi</h3>
-      </div>
-      <div class="menu-item" onclick="navigate('poin.html')">
-        <img src="https://img.icons8.com/color/48/000000/medal2--v2.png" alt="Poin" />
-        <h3>Poin & Edukasi</h3>
-      </div>
-      <div class="menu-item" onclick="navigate('profil.html')">
-        <img src="https://img.icons8.com/color/48/000000/user-female-circle.png" alt="Profil Remaja" />
-        <h3>Profil</h3>
-      </div>
+
+  <div class="card-box">
+    <div class="menu-item" onclick="alert('Konfirmasi Konsumsi')">
+      <img src="https://img.icons8.com/color/48/000000/checked--v1.png" alt="Konfirmasi" />
+      <h3>Konfirmasi</h3>
+    </div>
+    <div class="menu-item" onclick="alert('Riwayat Konsumsi')">
+      <img src="https://img.icons8.com/color/48/000000/timeline.png" alt="Riwayat" />
+      <h3>Riwayat</h3>
+    </div>
+    <div class="menu-item" onclick="alert('Poin & Edukasi')">
+      <img src="https://img.icons8.com/color/48/000000/medal2--v2.png" alt="Poin" />
+      <h3>Poin & Edukasi</h3>
+    </div>
+    <div class="menu-item" onclick="alert('Profil')">
+      <img src="https://img.icons8.com/color/48/000000/user-female-circle.png" alt="Profil" />
+      <h3>Profil</h3>
     </div>
   </div>
-
-  <script>
-    function navigate(page) {
-      window.location.href = page;
-    }
-  </script>
 </body>
 </html>
