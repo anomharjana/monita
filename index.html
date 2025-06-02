@@ -1,1 +1,155 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login | Pemantauan TTD</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #ffeef5 0%, #f8bbd0 100%);
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .logo {
+      margin-top: 2rem;
+      text-align: center;
+    }
+    .logo img {
+      max-width: 180px;
+      height: auto;
+    }
+    .login-container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+      width: 100%;
+    }
+    .login-box {
+      width: 100%;
+      max-width: 400px;
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 6px 16px rgba(240, 98, 146, 0.3);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .login-box:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 20px rgba(240, 98, 146, 0.4);
+    }
+    .login-box h2 {
+      margin-top: 0;
+      color: #d81b60;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #555;
+    }
+    select,
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    select:focus,
+    input:focus {
+      border-color: #f06292;
+      box-shadow: 0 0 0 3px rgba(240, 98, 146, 0.2);
+      outline: none;
+    }
+    button {
+      width: 100%;
+      background-color: #f06292;
+      color: white;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    button:hover {
+      background-color: #ec407a;
+      transform: scale(1.03);
+    }
+    @media (max-width: 500px) {
+      .login-box {
+        padding: 1.5rem;
+      }
+      .logo img {
+        max-width: 120px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="logo">
+    <img src="https://res.cloudinary.com/djexglfns/image/upload/v1748880819/ChatGPT_Image_2_Jun_2025__23.14.30-removebg-preview_e6eyew.png" alt="Logo Aplikasi">
+  </div>
 
+  <div class="login-container">
+    <div class="login-box">
+      <h2>Login</h2>
+      <form onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label for="role">Peran:</label>
+          <select id="role" required>
+            <option value="">-- Pilih Peran --</option>
+            <option value="siswa">Siswa</option>
+            <option value="orangtua">Orang Tua</option>
+            <option value="guru">Guru</option>
+            <option value="petugas">Petugas Kesehatan</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="username">Username:</label>
+          <input type="text" id="username" required />
+        </div>
+        <div class="form-group">
+          <label for="password">Password:</label>
+          <input type="password" id="password" required />
+        </div>
+        <button type="submit">Masuk</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function handleLogin(event) {
+      event.preventDefault();
+      const role = document.getElementById('role').value;
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      if (role && username && password) {
+        alert(`Login sebagai ${role} berhasil!`);
+        // window.location.href = `/home-${role}.html`;
+      } else {
+        alert("Silakan isi semua field.");
+      }
+    }
+  </script>
+</body>
+</html>
