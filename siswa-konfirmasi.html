@@ -83,6 +83,7 @@
       border-radius: 12px;
       font-size: 0.9rem;
       box-shadow: 0 2px 8px rgba(240, 98, 146, 0.2);
+      margin-top: 1rem;
     }
 
     .quote {
@@ -103,6 +104,16 @@
 
     #photoInput {
       display: none;
+    }
+
+    #alasanBox {
+      display: none;
+      margin-top: 1rem;
+      background: #fff6f8;
+      padding: 1rem;
+      border-left: 4px solid #d81b60;
+      border-radius: 12px;
+      font-size: 0.9rem;
     }
 
     @keyframes blink {
@@ -157,6 +168,12 @@
     <!-- Tempat tampilkan foto -->
     <img id="photoPreview" class="image-preview" style="display: none;" alt="Foto Konfirmasi" />
 
+    <!-- Tempat tampilkan alasan jika pilih Tidak -->
+    <div id="alasanBox">
+      <strong>Alasan tidak minum:</strong> <span id="alasanText"></span>
+    </div>
+
+    <!-- Tips -->
     <div class="tips-box" id="tipsBox"></div>
   </div>
 
@@ -178,7 +195,14 @@
       if (answer === 'Ya') {
         document.getElementById('photoInput').click();
       } else {
-        alert(`Jawaban "${answer}" berhasil disimpan pada ${new Date().toLocaleString('id-ID')}`);
+        const reason = prompt("Apa alasan kamu tidak minum tablet tambah darah hari ini?");
+        if (reason) {
+          document.getElementById('alasanText').textContent = reason;
+          document.getElementById('alasanBox').style.display = 'block';
+          alert(`Jawaban "Tidak" dan alasan berhasil disimpan.`);
+        } else {
+          alert("Jawaban 'Tidak' dibatalkan karena tidak ada alasan yang diisi.");
+        }
       }
     }
 
