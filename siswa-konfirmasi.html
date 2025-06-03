@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Form Konfirmasi Minum TTD</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem;
+      background: #ffeef5;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .logo {
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .logo img {
+      max-width: 180px;
+      width: 100%;
+      height: auto;
+      transition: transform 0.3s ease;
+      cursor: pointer;
+    }
+
+    .logo img:hover {
+      transform: scale(1.1);
+    }
+
+    .card-box {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(240, 98, 146, 0.2);
+      padding: 2rem 2.5rem;
+      max-width: 360px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-info {
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .button-group button {
+      border: 2px solid #d81b60;
+      background-color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: #d81b60;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: transform 0.2s ease, background-color 0.2s;
+    }
+
+    .button-group button:hover {
+      transform: scale(1.05);
+      background-color: #ffe4ec;
+    }
+
+    .tips-box {
+      background-color: #fff0f4;
+      border-left: 4px solid #d81b60;
+      padding: 1rem;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      box-shadow: 0 2px 8px rgba(240, 98, 146, 0.2);
+    }
+
+    .quote {
+      font-style: italic;
+      font-size: 0.95rem;
+      color: #d81b60;
+      text-align: center;
+      animation: blink 1.4s infinite;
+      margin-top: 1rem;
+    }
+
+    .image-preview {
+      margin-top: 1rem;
+      max-width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    #photoInput {
+      display: none;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    @media (max-width: 400px) {
+      body {
+        margin: 1rem;
+      }
+
+      .card-box {
+        padding: 1.5rem 1rem;
+        max-width: 300px;
+      }
+
+      .button-group button {
+        padding: 0.6rem 1rem;
+        font-size: 0.8rem;
+      }
+
+      .logo img {
+        max-width: 120px;
+      }
+
+      .quote {
+        font-size: 0.85rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="logo">
+    <img src="https://res.cloudinary.com/djexglfns/image/upload/v1748880819/ChatGPT_Image_2_Jun_2025__23.14.30-removebg-preview_e6eyew.png" alt="Logo Aplikasi" />
+  </div>
+
+  <div class="card-box">
+    <div class="form-info" id="dateTimeInfo">
+      Hari: ..., Tanggal: ..., Jam: ...
+    </div>
+
+    <div class="button-group">
+      <button onclick="submitResponse('Ya')">✅ Ya</button>
+      <button onclick="submitResponse('Tidak')">❌ Tidak</button>
+    </div>
+
+    <!-- Input file untuk kamera -->
+    <input type="file" accept="image/*" capture="environment" id="photoInput" onchange="previewPhoto(event)" />
+
+    <!-- Tempat tampilkan foto -->
+    <img id="photoPreview" class="image-preview" style="display: none;" alt="Foto Konfirmasi" />
+
+    <div class="tips-box" id="tipsBox"></div>
+  </div>
+
+  <div class="quote">
+    "Setiap tablet yang kamu minum hari ini adalah investasi untuk tubuh yang kuat esok hari."
+  </div>
+
+  <script>
+    function updateDateTime() {
+      const now = new Date();
+      const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+      const day = days[now.getDay()];
+      const date = now.toLocaleDateString('id-ID');
+      const time = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+      document.getElementById('dateTimeInfo').textContent = `Hari: ${day}, Tanggal: ${date}, Jam: ${time}`;
+    }
+
+    function submitResponse(answer) {
+      if (answer === 'Ya') {
+        document.getElementById('photoInput').click();
+      } else {
+        alert(`Jawaban "${answer}" berhasil disimpan pada ${new Date().toLocaleString('id-ID')}`);
+      }
+    }
+
+    function previewPhoto(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const img = document.getElementById('photoPreview');
+          img.src = e.target.result;
+          img.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+
+        alert(`Jawaban "Ya" berhasil disimpan beserta bukti foto.`);
+      }
+    }
+
+    const tips = [
+      "Minumlah tablet tambah darah setelah makan malam agar tidak mual.",
+      "Simpan tablet di tempat yang terlihat agar tidak lupa.",
+      "Minum dengan air putih, hindari teh atau kopi setelahnya.",
+      "Ajak teman minum bareng agar lebih semangat.",
+      "Konsisten minum tiap minggu akan membuat tubuhmu lebih kuat!"
+    ];
+
+    function showRandomTip() {
+      const randomIndex = Math.floor(Math.random() * tips.length);
+      document.getElementById('tipsBox').textContent = tips[randomIndex];
+    }
+
+    updateDateTime();
+    showRandomTip();
+  </script>
+</body>
+</html>
