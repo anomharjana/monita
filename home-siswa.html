@@ -14,10 +14,12 @@
       flex-direction: column;
       align-items: center;
     }
+
     .logo {
       margin-bottom: 2rem;
       text-align: center;
     }
+
     .logo img {
       max-width: 180px;
       width: 100%;
@@ -25,9 +27,11 @@
       transition: transform 0.3s ease;
       cursor: pointer;
     }
+
     .logo img:hover {
       transform: scale(1.1);
     }
+
     .card-box {
       background: white;
       border-radius: 16px;
@@ -40,7 +44,9 @@
       gap: 1.5rem 2rem;
       justify-items: center;
       align-items: center;
+      margin-bottom: 1.5rem;
     }
+
     .menu-item {
       background: #fff0f4;
       border-radius: 12px;
@@ -57,49 +63,74 @@
       min-height: 110px;
       user-select: none;
     }
+
     .menu-item:hover {
       transform: translateY(-3px) scale(1.05);
       box-shadow: 0 6px 12px rgba(240, 98, 146, 0.4);
     }
+
     .menu-item img {
       width: 36px;
       height: 36px;
       margin-bottom: 0.5rem;
       transition: transform 0.3s ease;
     }
+
     .menu-item:hover img {
       transform: rotate(5deg);
     }
+
     .menu-item h3 {
       margin: 0;
       font-size: 0.85rem;
       color: #d81b60;
     }
 
-    /* Responsiveness: keep 2x2 on mobile, reduce padding/font-size if needed */
+    .quote {
+      font-style: italic;
+      font-size: 0.95rem;
+      color: #d81b60;
+      text-align: center;
+      animation: blink 1.4s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
     @media (max-width: 400px) {
       body {
         margin: 1rem;
       }
+
       .card-box {
         padding: 1.5rem 1rem;
         max-width: 300px;
         gap: 1rem;
       }
+
       .menu-item {
         width: 100px;
         padding: 0.5rem;
         min-height: 100px;
       }
+
       .menu-item img {
         width: 32px;
         height: 32px;
       }
+
       .menu-item h3 {
         font-size: 0.75rem;
       }
+
       .logo img {
         max-width: 120px;
+      }
+
+      .quote {
+        font-size: 0.85rem;
       }
     }
   </style>
@@ -126,6 +157,10 @@
       <img src="https://img.icons8.com/color/48/000000/user-female-circle.png" alt="Profil" />
       <h3>Profil</h3>
     </div>
+  </div>
+
+  <div class="quote">
+    "Setiap tablet yang kamu minum hari ini adalah investasi untuk tubuh yang kuat esok hari."
   </div>
 </body>
 </html>
