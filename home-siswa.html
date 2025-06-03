@@ -33,7 +33,7 @@
       border-radius: 16px;
       box-shadow: 0 4px 12px rgba(240, 98, 146, 0.2);
       padding: 2rem 2.5rem;
-      max-width: 320px;
+      max-width: 360px;
       width: 100%;
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -55,7 +55,7 @@
       align-items: center;
       justify-content: center;
       min-height: 110px;
-      user-select: none; /* mencegah teks terpilih saat klik */
+      user-select: none;
     }
     .menu-item:hover {
       transform: translateY(-3px) scale(1.05);
@@ -75,22 +75,28 @@
       font-size: 0.85rem;
       color: #d81b60;
     }
+
+    /* Responsiveness: keep 2x2 on mobile, reduce padding/font-size if needed */
     @media (max-width: 400px) {
       body {
         margin: 1rem;
       }
       .card-box {
-        grid-template-columns: 1fr;
-        max-width: 140px;
-        padding: 1rem 1.5rem;
-        gap: 1.25rem 0;
+        padding: 1.5rem 1rem;
+        max-width: 300px;
+        gap: 1rem;
       }
       .menu-item {
-        width: 100%;
-        min-height: auto;
+        width: 100px;
+        padding: 0.5rem;
+        min-height: 100px;
       }
-      .logo {
-        margin-bottom: 1.5rem;
+      .menu-item img {
+        width: 32px;
+        height: 32px;
+      }
+      .menu-item h3 {
+        font-size: 0.75rem;
       }
       .logo img {
         max-width: 120px;
