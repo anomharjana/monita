@@ -282,7 +282,7 @@
 
     function showRandomTip() {
       const randomIndex = Math.floor(Math.random() * tips.length);
-      document.getElementById('tipsBox').textContent = "Tips: " + tips[randomIndex];
+      document.getElementById('tipsBox').textContent = " " + tips[randomIndex];
     }
 
     setInterval(showRandomTip, 5000);
