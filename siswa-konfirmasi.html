@@ -250,15 +250,18 @@
 
     if (answer === 'Ya') {
       tempAnswer = 'Ya';
-      // Reset photo preview and input
-      document.getElementById('photoPreview').style.display = 'none';
-      document.getElementById('photoPreview').src = '';
-      document.getElementById('photoInput').value = '';
+      // Reset photo preview and input before selecting new photo
+      const photoInput = document.getElementById('photoInput');
+      const photoPreview = document.getElementById('photoPreview');
+
+      photoInput.value = ''; // reset input file to allow re-select same file if needed
+      photoPreview.style.display = 'none';
+      photoPreview.src = '';
       document.getElementById('alasanBox').style.display = 'none';
       document.getElementById('alasanText').textContent = '';
 
-      // Open file dialog for photo
-      document.getElementById('photoInput').click();
+      // Open file dialog for photo input
+      photoInput.click();
     } else {
       tempAnswer = 'Tidak';
       const reason = prompt("Apa alasan kamu tidak minum tablet tambah darah hari ini?");
@@ -297,8 +300,11 @@
 
   function saveRiwayat(tanggal, waktu, jawaban, alasan = "", foto = "") {
     let riwayat = JSON.parse(localStorage.getItem("riwayatTTD")) || [];
+
+    // Tambahkan data baru di depan (unshift)
     riwayat.unshift({ tanggal, waktu, jawaban, alasan, foto });
 
+    // Batasi maksimal 52 data
     if (riwayat.length > 52) {
       riwayat = riwayat.slice(0, 52);
     }
@@ -322,16 +328,17 @@
       const li = document.createElement('li');
 
       // Thumbnail foto, hanya jika jawaban "Ya" dan foto ada
-      let thumbHTML = '';
       if (item.jawaban === 'Ya' && item.foto) {
-        thumbHTML = `<img src="${item.foto}" alt="Foto Bukti" />`;
+        const img = document.createElement('img');
+        img.src = item.foto;
+        img.alt = 'Foto Bukti';
+        li.appendChild(img);
       }
 
       const textContent = document.createElement('div');
       textContent.className = 'text-content';
       textContent.innerHTML = `<strong>${item.jawaban === 'Ya' ? '✅ Ya' : '❌ Tidak'}</strong> - ${item.tanggal}, ${item.waktu}${item.alasan ? `<br><em>Alasan:</em> ${item.alasan}` : ''}`;
 
-      li.innerHTML = thumbHTML;
       li.appendChild(textContent);
 
       list.appendChild(li);
@@ -356,7 +363,6 @@
   updateDateTime();
   showRandomTip();
   renderRiwayat();
-
 </script>
 </body>
 </html>
