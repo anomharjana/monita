@@ -15,11 +15,6 @@
       align-items: center;
     }
 
-    .logo {
-      margin-bottom: 2rem;
-      text-align: center;
-    }
-
     .logo img {
       max-width: 180px;
       width: 100%;
@@ -133,6 +128,13 @@
       text-decoration: underline;
     }
 
+    .riwayat-foto {
+      margin-top: 0.3rem;
+      max-width: 80px;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+    }
+
     @media (max-width: 400px) {
       body {
         margin: 1rem;
@@ -175,7 +177,6 @@
     </div>
 
     <input type="file" accept="image/*" capture="environment" id="photoInput" onchange="previewPhoto(event)" />
-
     <img id="photoPreview" class="image-preview" style="display: none;" alt="Foto Konfirmasi" />
 
     <div id="alasanBox">
@@ -185,7 +186,6 @@
     <div class="tips-box" id="tipsBox"></div>
   </div>
 
-  <!-- Riwayat -->
   <div class="card-box" style="margin-top: 1rem; max-width: 400px;">
     <h3>Riwayat Minum</h3>
     <ul id="riwayatList" style="list-style: none; padding: 0;"></ul>
@@ -211,7 +211,6 @@
 
       if (answer === 'Ya') {
         document.getElementById('photoInput').click();
-        saveRiwayat(tanggal, waktu, answer);
       } else {
         const reason = prompt("Apa alasan kamu tidak minum tablet tambah darah hari ini?");
         if (reason) {
@@ -230,18 +229,25 @@
       if (file) {
         const reader = new FileReader();
         reader.onload = function(e) {
+          const fotoBase64 = e.target.result;
           const img = document.getElementById('photoPreview');
-          img.src = e.target.result;
+          img.src = fotoBase64;
           img.style.display = 'block';
+
+          const now = new Date();
+          const tanggal = now.toLocaleDateString('id-ID');
+          const waktu = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+          alert(`Jawaban "Ya" berhasil disimpan beserta bukti foto.`);
+          saveRiwayat(tanggal, waktu, 'Ya', '', fotoBase64);
         };
         reader.readAsDataURL(file);
-        alert(`Jawaban "Ya" berhasil disimpan beserta bukti foto.`);
       }
     }
 
-    function saveRiwayat(tanggal, waktu, jawaban, alasan = "") {
+    function saveRiwayat(tanggal, waktu, jawaban, alasan = "", foto = "") {
       let riwayat = JSON.parse(localStorage.getItem("riwayatTTD")) || [];
-      riwayat.unshift({ tanggal, waktu, jawaban, alasan });
+      riwayat.unshift({ tanggal, waktu, jawaban, alasan, foto });
 
       if (riwayat.length > 50) {
         riwayat = riwayat.slice(0, 50);
@@ -267,7 +273,12 @@
         li.style.marginBottom = '0.5rem';
         li.style.padding = '0.5rem';
         li.style.borderBottom = '1px dashed #ccc';
-        li.innerHTML = `<strong>${item.jawaban === 'Ya' ? '✅ Ya' : '❌ Tidak'}</strong> - ${item.tanggal}, ${item.waktu}${item.alasan ? `<br><em>Alasan:</em> ${item.alasan}` : ''}`;
+
+        let isi = `<strong>${item.jawaban === 'Ya' ? '✅ Ya' : '❌ Tidak'}</strong> - ${item.tanggal}, ${item.waktu}`;
+        if (item.alasan) isi += `<br><em>Alasan:</em> ${item.alasan}`;
+        if (item.foto) isi += `<br><img src="${item.foto}" class="riwayat-foto" alt="Bukti Foto" />`;
+
+        li.innerHTML = isi;
         list.appendChild(li);
       });
     }
