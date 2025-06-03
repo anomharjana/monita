@@ -193,7 +193,7 @@
   </div>
 
   <script>
-    // Popup show then hide
+    // Tampilkan popup saat load
     window.addEventListener('load', () => {
       const popup = document.getElementById('popup');
       setTimeout(() => {
@@ -201,16 +201,32 @@
       }, 2000); // tampil selama 2 detik
     });
 
+    // Login handler
     function handleLogin(event) {
       event.preventDefault();
+
       const role = document.getElementById('role').value;
-      const username = document.getElementById('username').value;
+      const username = document.getElementById('username').value.trim().toLowerCase();
       const password = document.getElementById('password').value;
 
-      if (role && username && password) {
+      // Data login standar
+      const validUsers = {
+        siswa:     { username: 'siswa', password: '123' },
+        orangtua:  { username: 'ortu',  password: '123' },
+        guru:      { username: 'guru',  password: '123' },
+        petugas:   { username: 'petugas', password: '123' }
+      };
+
+      if (!role || !username || !password) {
+        alert("Silakan isi semua field.");
+        return;
+      }
+
+      const user = validUsers[role];
+      if (user && user.username === username && user.password === password) {
         window.location.href = `home-${role}.html`;
       } else {
-        alert("Silakan isi semua field.");
+        alert("Username atau password salah.");
       }
     }
   </script>
