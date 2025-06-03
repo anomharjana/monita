@@ -46,6 +46,7 @@
       margin-bottom: 1rem;
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 1rem;
     }
 
@@ -88,6 +89,10 @@
       stroke: #eee;
     }
 
+    .progress-bar {
+      transition: stroke-dashoffset 1.2s ease-out;
+    }
+
     .progress-bar.low {
       stroke: #2e7d32;
     }
@@ -112,6 +117,7 @@
 
     .risiko-info {
       flex: 1;
+      animation: blink 1.6s infinite;
     }
 
     .risiko-info h4 {
@@ -125,6 +131,11 @@
       margin: 0.2rem 0 0 0;
       font-size: 0.85rem;
       color: inherit;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
     }
 
     .card-box {
@@ -181,32 +192,15 @@
       color: #d81b60;
     }
 
-    .quote {
-      font-style: italic;
-      font-size: 0.95rem;
-      color: #d81b60;
-      text-align: center;
-      animation: blink 1.4s infinite;
-    }
-
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0; }
-    }
-
     @media (max-width: 480px) {
       body {
         margin: 1rem;
       }
 
       .ringkasan-card {
-        flex-direction: column;
+        flex-direction: row;
         align-items: center;
-        text-align: center;
-      }
-
-      .risiko-info {
-        margin-top: 0.5rem;
+        text-align: left;
       }
 
       .card-box {
@@ -231,10 +225,6 @@
 
       .logo img {
         max-width: 120px;
-      }
-
-      .quote {
-        font-size: 0.85rem;
       }
     }
   </style>
@@ -265,10 +255,6 @@
       <img src="https://img.icons8.com/color/48/000000/user-female-circle.png" alt="Profil" />
       <h3>Profil</h3>
     </div>
-  </div>
-
-  <div class="quote">
-    "Setiap tablet yang kamu minum hari ini adalah investasi untuk tubuh yang kuat esok hari."
   </div>
 
   <script>
@@ -306,7 +292,6 @@
 
       const radius = 45;
       const circumference = 2 * Math.PI * radius;
-      const offset = circumference * (1 - percent);
 
       const container = document.getElementById("ringkasanContainer");
       container.className = `ringkasan-card ${risiko}`;
@@ -316,7 +301,7 @@
             <circle class="progress-bg" cx="60" cy="60" r="${radius}"></circle>
             <circle class="progress-bar ${risiko}" cx="60" cy="60" r="${radius}"
               stroke-dasharray="${circumference}"
-              stroke-dashoffset="${offset}"></circle>
+              stroke-dashoffset="${circumference}"></circle>
           </svg>
           <div class="progress-text">${yaCount}/${total}</div>
         </div>
@@ -325,6 +310,11 @@
           <p>${penjelasanRisiko(risiko)}</p>
         </div>
       `;
+
+      setTimeout(() => {
+        const progressCircle = container.querySelector(".progress-bar");
+        progressCircle.style.strokeDashoffset = circumference * (1 - percent);
+      }, 100); // Delay to allow animation to trigger
     }
 
     document.addEventListener("DOMContentLoaded", tampilkanRingkasan);
