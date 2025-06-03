@@ -81,18 +81,18 @@
       border-left: 4px solid #d81b60;
       padding: 1rem;
       border-radius: 12px;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #d81b60;
+      text-align: center;
+      animation: blinkTips 1.6s infinite;
       box-shadow: 0 2px 8px rgba(240, 98, 146, 0.2);
       margin-top: 1rem;
     }
 
-    .quote {
-      font-style: italic;
-      font-size: 0.95rem;
-      color: #d81b60;
-      text-align: center;
-      animation: blink 1.4s infinite;
-      margin-top: 1rem;
+    @keyframes blinkTips {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
     }
 
     .image-preview {
@@ -116,9 +116,21 @@
       font-size: 0.9rem;
     }
 
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0; }
+    .lihat-riwayat {
+      text-align: center;
+      margin-top: 0.5rem;
+    }
+
+    .lihat-riwayat a {
+      color: #d81b60;
+      text-decoration: none;
+      font-weight: bold;
+      transition: color 0.3s;
+    }
+
+    .lihat-riwayat a:hover {
+      color: #ad1457;
+      text-decoration: underline;
     }
 
     @media (max-width: 400px) {
@@ -140,7 +152,7 @@
         max-width: 120px;
       }
 
-      .quote {
+      .tips-box {
         font-size: 0.85rem;
       }
     }
@@ -173,14 +185,13 @@
     <div class="tips-box" id="tipsBox"></div>
   </div>
 
-  <div class="quote">
-    "Setiap tablet yang kamu minum hari ini adalah investasi untuk tubuh yang kuat esok hari."
-  </div>
-
   <!-- Riwayat -->
   <div class="card-box" style="margin-top: 1rem; max-width: 400px;">
     <h3>Riwayat Minum</h3>
     <ul id="riwayatList" style="list-style: none; padding: 0;"></ul>
+    <div class="lihat-riwayat">
+      <a href="riwayat.html">Lihat Semua Riwayat</a>
+    </div>
   </div>
 
   <script>
@@ -231,6 +242,11 @@
     function saveRiwayat(tanggal, waktu, jawaban, alasan = "") {
       let riwayat = JSON.parse(localStorage.getItem("riwayatTTD")) || [];
       riwayat.unshift({ tanggal, waktu, jawaban, alasan });
+
+      if (riwayat.length > 50) {
+        riwayat = riwayat.slice(0, 50);
+      }
+
       localStorage.setItem("riwayatTTD", JSON.stringify(riwayat));
       renderRiwayat();
     }
@@ -240,12 +256,13 @@
       list.innerHTML = '';
       const riwayat = JSON.parse(localStorage.getItem("riwayatTTD")) || [];
 
-      if (riwayat.length === 0) {
+      const tampil = riwayat.slice(0, 7);
+      if (tampil.length === 0) {
         list.innerHTML = '<li>Tidak ada data riwayat.</li>';
         return;
       }
 
-      riwayat.forEach(item => {
+      tampil.forEach(item => {
         const li = document.createElement('li');
         li.style.marginBottom = '0.5rem';
         li.style.padding = '0.5rem';
@@ -256,17 +273,19 @@
     }
 
     const tips = [
-      "Minumlah tablet tambah darah setelah makan malam agar tidak mual.",
-      "Simpan tablet di tempat yang terlihat agar tidak lupa.",
-      "Minum dengan air putih, hindari teh atau kopi setelahnya.",
-      "Ajak teman minum bareng agar lebih semangat.",
-      "Konsisten minum tiap minggu akan membuat tubuhmu lebih kuat!"
+      "💧 Minumlah tablet tambah darah setelah makan malam agar tidak mual.",
+      "📍 Simpan tablet di tempat yang terlihat agar tidak lupa.",
+      "🚫 Hindari teh atau kopi setelah minum tablet.",
+      "👭 Ajak teman minum bareng agar lebih semangat.",
+      "📆 Konsisten minum tiap minggu untuk tubuh yang kuat!"
     ];
 
     function showRandomTip() {
       const randomIndex = Math.floor(Math.random() * tips.length);
-      document.getElementById('tipsBox').textContent = tips[randomIndex];
+      document.getElementById('tipsBox').textContent = "Tips: " + tips[randomIndex];
     }
+
+    setInterval(showRandomTip, 5000);
 
     updateDateTime();
     showRandomTip();
