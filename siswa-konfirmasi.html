@@ -162,23 +162,25 @@
       <button onclick="submitResponse('Tidak')">❌ Tidak</button>
     </div>
 
-    <!-- Input file untuk kamera -->
     <input type="file" accept="image/*" capture="environment" id="photoInput" onchange="previewPhoto(event)" />
 
-    <!-- Tempat tampilkan foto -->
     <img id="photoPreview" class="image-preview" style="display: none;" alt="Foto Konfirmasi" />
 
-    <!-- Tempat tampilkan alasan jika pilih Tidak -->
     <div id="alasanBox">
       <strong>Alasan tidak minum:</strong> <span id="alasanText"></span>
     </div>
 
-    <!-- Tips -->
     <div class="tips-box" id="tipsBox"></div>
   </div>
 
   <div class="quote">
     "Setiap tablet yang kamu minum hari ini adalah investasi untuk tubuh yang kuat esok hari."
+  </div>
+
+  <!-- Riwayat -->
+  <div class="card-box" style="margin-top: 1rem; max-width: 400px;">
+    <h3>Riwayat Minum</h3>
+    <ul id="riwayatList" style="list-style: none; padding: 0;"></ul>
   </div>
 
   <script>
@@ -192,14 +194,20 @@
     }
 
     function submitResponse(answer) {
+      const now = new Date();
+      const tanggal = now.toLocaleDateString('id-ID');
+      const waktu = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
       if (answer === 'Ya') {
         document.getElementById('photoInput').click();
+        saveRiwayat(tanggal, waktu, answer);
       } else {
         const reason = prompt("Apa alasan kamu tidak minum tablet tambah darah hari ini?");
         if (reason) {
           document.getElementById('alasanText').textContent = reason;
           document.getElementById('alasanBox').style.display = 'block';
           alert(`Jawaban "Tidak" dan alasan berhasil disimpan.`);
+          saveRiwayat(tanggal, waktu, answer, reason);
         } else {
           alert("Jawaban 'Tidak' dibatalkan karena tidak ada alasan yang diisi.");
         }
@@ -216,9 +224,35 @@
           img.style.display = 'block';
         };
         reader.readAsDataURL(file);
-
         alert(`Jawaban "Ya" berhasil disimpan beserta bukti foto.`);
       }
+    }
+
+    function saveRiwayat(tanggal, waktu, jawaban, alasan = "") {
+      let riwayat = JSON.parse(localStorage.getItem("riwayatTTD")) || [];
+      riwayat.unshift({ tanggal, waktu, jawaban, alasan });
+      localStorage.setItem("riwayatTTD", JSON.stringify(riwayat));
+      renderRiwayat();
+    }
+
+    function renderRiwayat() {
+      const list = document.getElementById('riwayatList');
+      list.innerHTML = '';
+      const riwayat = JSON.parse(localStorage.getItem("riwayatTTD")) || [];
+
+      if (riwayat.length === 0) {
+        list.innerHTML = '<li>Tidak ada data riwayat.</li>';
+        return;
+      }
+
+      riwayat.forEach(item => {
+        const li = document.createElement('li');
+        li.style.marginBottom = '0.5rem';
+        li.style.padding = '0.5rem';
+        li.style.borderBottom = '1px dashed #ccc';
+        li.innerHTML = `<strong>${item.jawaban === 'Ya' ? '✅ Ya' : '❌ Tidak'}</strong> - ${item.tanggal}, ${item.waktu}${item.alasan ? `<br><em>Alasan:</em> ${item.alasan}` : ''}`;
+        list.appendChild(li);
+      });
     }
 
     const tips = [
@@ -236,6 +270,7 @@
 
     updateDateTime();
     showRandomTip();
+    renderRiwayat();
   </script>
 </body>
 </html>
