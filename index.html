@@ -8,6 +8,7 @@
     * {
       box-sizing: border-box;
     }
+
     body {
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
@@ -19,14 +20,17 @@
       flex-direction: column;
       align-items: center;
     }
+
     .logo {
       margin-top: 2rem;
       text-align: center;
     }
+
     .logo img {
       max-width: 180px;
       height: auto;
     }
+
     .login-container {
       flex: 1;
       display: flex;
@@ -35,6 +39,7 @@
       padding: 2rem;
       width: 100%;
     }
+
     .login-box {
       width: 100%;
       max-width: 400px;
@@ -44,25 +49,30 @@
       box-shadow: 0 6px 16px rgba(240, 98, 146, 0.3);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
+
     .login-box:hover {
       transform: translateY(-4px);
       box-shadow: 0 10px 20px rgba(240, 98, 146, 0.4);
     }
+
     .login-box h2 {
       margin-top: 0;
       color: #d81b60;
       text-align: center;
       margin-bottom: 1.5rem;
     }
+
     .form-group {
       margin-bottom: 1.25rem;
     }
+
     label {
       display: block;
       margin-bottom: 0.5rem;
       font-weight: 600;
       color: #555;
     }
+
     select,
     input[type="text"],
     input[type="password"] {
@@ -72,12 +82,14 @@
       border-radius: 10px;
       transition: border-color 0.3s, box-shadow 0.3s;
     }
+
     select:focus,
     input:focus {
       border-color: #f06292;
       box-shadow: 0 0 0 3px rgba(240, 98, 146, 0.2);
       outline: none;
     }
+
     button {
       width: 100%;
       background-color: #f06292;
@@ -90,10 +102,12 @@
       cursor: pointer;
       transition: background-color 0.3s, transform 0.2s;
     }
+
     button:hover {
       background-color: #ec407a;
       transform: scale(1.03);
     }
+
     @media (max-width: 500px) {
       .login-box {
         padding: 1.5rem;
@@ -102,9 +116,51 @@
         max-width: 120px;
       }
     }
+
+    /* Popup styling */
+    #popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      transition: opacity 0.5s ease;
+    }
+
+    #popup.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #popup img {
+      max-width: 180px;
+      animation: popIn 1s ease;
+    }
+
+    @keyframes popIn {
+      0% {
+        transform: scale(0.7);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
   </style>
 </head>
 <body>
+
+  <!-- Popup -->
+  <div id="popup">
+    <img src="https://res.cloudinary.com/djexglfns/image/upload/v1748921969/WhatsApp_Image_2025-06-03_at_11.37.35_AM-removebg-preview_b8nr8a.png" alt="Logo Aplikasi" />
+  </div>
+
   <div class="logo">
     <img src="https://res.cloudinary.com/djexglfns/image/upload/v1748920768/WhatsApp_Image_2025-06-03_at_11.17.29_AM-removebg-preview_bjfu6l.png" alt="Logo Aplikasi">
   </div>
@@ -137,6 +193,14 @@
   </div>
 
   <script>
+    // Popup show then hide
+    window.addEventListener('load', () => {
+      const popup = document.getElementById('popup');
+      setTimeout(() => {
+        popup.classList.add('hidden');
+      }, 2000); // tampil selama 2 detik
+    });
+
     function handleLogin(event) {
       event.preventDefault();
       const role = document.getElementById('role').value;
@@ -144,7 +208,6 @@
       const password = document.getElementById('password').value;
 
       if (role && username && password) {
-        // Redirect based on role
         window.location.href = `home-${role}.html`;
       } else {
         alert("Silakan isi semua field.");
