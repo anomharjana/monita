@@ -3,126 +3,198 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Semua Riwayat Minum TTD</title>
+  <title>Riwayat Minum TTD</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 2rem;
-      background-color: #fff4f8;
+      background: #fff0f4;
       color: #333;
     }
 
-    h1 {
-      text-align: center;
-      color: #d81b60;
+    .container {
+      max-width: 720px;
+      margin: auto;
     }
 
-    .riwayat-container {
-      max-width: 600px;
-      margin: auto;
-      background: white;
-      padding: 1.5rem;
+    .summary-card {
+      background-color: white;
       border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(216, 27, 96, 0.1);
+      padding: 2rem;
+      box-shadow: 0 4px 12px rgba(240, 98, 146, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+    }
+
+    .summary-info {
+      flex-grow: 1;
+    }
+
+    .summary-title {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .summary-value {
+      font-size: 2.2rem;
+      font-weight: bold;
+    }
+
+    .risk-status {
+      margin-top: 0.5rem;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .risk-rendah { color: green; }
+    .risk-sedang { color: orange; }
+    .risk-tinggi { color: red; }
+
+    .progress-circle {
+      width: 100px;
+      height: 100px;
+    }
+
+    .riwayat-card {
+      background: white;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
     .riwayat-item {
-      border-bottom: 1px solid #eee;
-      padding: 1rem 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1rem;
     }
 
-    .riwayat-item:last-child {
-      border-bottom: none;
-    }
-
-    .status {
-      font-weight: bold;
-    }
-
-    .foto-thumb {
-      width: 70px;
+    .riwayat-thumbnail {
+      width: 64px;
+      height: 64px;
+      object-fit: cover;
       border-radius: 8px;
-      margin-top: 0.5rem;
     }
 
-    .back-link {
+    .riwayat-detail {
+      flex: 1;
+    }
+
+    .riwayat-detail strong {
       display: block;
-      margin: 2rem auto 0;
-      text-align: center;
-    }
-
-    .back-link a {
-      color: #d81b60;
-      text-decoration: none;
-      font-weight: bold;
-      padding: 0.5rem 1rem;
-      border: 2px solid #d81b60;
-      border-radius: 8px;
-      background-color: #fff0f5;
-      transition: all 0.3s ease;
-    }
-
-    .back-link a:hover {
-      background-color: #ffdce7;
-    }
-
-    @media (max-width: 480px) {
-      body {
-        margin: 1rem;
-      }
-
-      .riwayat-container {
-        padding: 1rem;
-      }
-
-      .foto-thumb {
-        width: 60px;
-      }
+      margin-bottom: 0.25rem;
     }
   </style>
 </head>
 <body>
-  <h1>Semua Riwayat Minum</h1>
+  <div class="container">
+    <h2>Ringkasan Konsumsi TTD</h2>
+    <div class="summary-card">
+      <div class="summary-info">
+        <div class="summary-title">Total Konsumsi:</div>
+        <div id="summaryValue" class="summary-value">0/0</div>
+        <div id="riskStatus" class="risk-status"></div>
+      </div>
+      <svg class="progress-circle" viewBox="0 0 36 36">
+        <path fill="none" stroke="#eee" stroke-width="4" d="M18 2.0845
+          a 15.9155 15.9155 0 0 1 0 31.831
+          a 15.9155 15.9155 0 0 1 0 -31.831" />
+        <path id="progressBar" fill="none" stroke="#d81b60" stroke-width="4" stroke-dasharray="0,100"
+          d="M18 2.0845
+          a 15.9155 15.9155 0 0 1 0 31.831
+          a 15.9155 15.9155 0 0 1 0 -31.831" />
+      </svg>
+    </div>
 
-  <div class="riwayat-container" id="semuaRiwayat">
-    <!-- Riwayat akan ditampilkan di sini -->
-  </div>
-
-  <div class="back-link">
-    <a href="siswa-konfirmasi.html">⬅ Kembali ke Pencatatan</a>
+    <h3>Riwayat Lengkap</h3>
+    <div id="riwayatContainer"></div>
   </div>
 
   <script>
-    function renderSemuaRiwayat() {
-      const riwayat = JSON.parse(localStorage.getItem("riwayatTTD")) || [];
-      const container = document.getElementById("semuaRiwayat");
-
-      if (riwayat.length === 0) {
-        container.innerHTML = "<p>Tidak ada data riwayat yang tersimpan.</p>";
-        return;
-      }
-
-      riwayat.forEach(item => {
-        const div = document.createElement("div");
-        div.className = "riwayat-item";
-
-        const status = item.jawaban === "Ya" ? "✅ Ya" : "❌ Tidak";
-        const alasan = item.alasan ? `<br><em>Alasan:</em> ${item.alasan}` : "";
-        const foto = item.foto ? `<br><img src="${item.foto}" class="foto-thumb">` : "";
-
-        div.innerHTML = `
-          <div class="status">${status}</div>
-          <div>Tanggal: ${item.tanggal}</div>
-          <div>Waktu: ${item.waktu}</div>
-          ${alasan}
-          ${foto}
-        `;
-
-        container.appendChild(div);
+    function filterCurrentYear(data) {
+      const thisYear = new Date().getFullYear();
+      return data.filter(entry => {
+        const parts = entry.tanggal.split('/');
+        const year = parseInt(parts[2]);
+        return year === thisYear;
       });
     }
 
-    renderSemuaRiwayat();
+    function calculateRingkasan(data) {
+      const yaCount = data.filter(d => d.jawaban === "Ya").length;
+      const total = Math.min(data.length, 52);
+      return { yaCount, total };
+    }
+
+    function getRiskStatus(ya, total) {
+      const percent = (ya / total) * 100;
+      if (percent >= 75) return { label: "Risiko Rendah", class: "risk-rendah" };
+      if (percent >= 50) return { label: "Risiko Sedang", class: "risk-sedang" };
+      return { label: "Risiko Tinggi", class: "risk-tinggi" };
+    }
+
+    function updateRingkasanUI(ya, total) {
+      const el = document.getElementById("summaryValue");
+      el.textContent = `${ya}/${total}`;
+
+      const risk = getRiskStatus(ya, total);
+      const riskStatus = document.getElementById("riskStatus");
+      riskStatus.textContent = risk.label;
+      riskStatus.className = `risk-status ${risk.class}`;
+
+      const percent = total > 0 ? (ya / total) * 100 : 0;
+      const circle = document.getElementById("progressBar");
+      circle.setAttribute("stroke-dasharray", `${percent},100`);
+    }
+
+    function renderRiwayat(data) {
+      const container = document.getElementById("riwayatContainer");
+      container.innerHTML = "";
+
+      const entries = data.slice(0, 52);
+
+      if (entries.length === 0) {
+        container.innerHTML = "<p>Tidak ada data riwayat tahun ini.</p>";
+        return;
+      }
+
+      entries.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "riwayat-card";
+
+        const row = document.createElement("div");
+        row.className = "riwayat-item";
+
+        if (item.foto) {
+          const img = document.createElement("img");
+          img.className = "riwayat-thumbnail";
+          img.src = item.foto;
+          row.appendChild(img);
+        }
+
+        const detail = document.createElement("div");
+        detail.className = "riwayat-detail";
+        detail.innerHTML = `<strong>${item.jawaban === "Ya" ? "✅ Ya" : "❌ Tidak"}</strong>${item.tanggal}, ${item.waktu}`;
+
+        if (item.alasan) {
+          detail.innerHTML += `<br><em>Alasan:</em> ${item.alasan}`;
+        }
+
+        row.appendChild(detail);
+        card.appendChild(row);
+        container.appendChild(card);
+      });
+    }
+
+    const riwayat = JSON.parse(localStorage.getItem("riwayatTTD")) || [];
+    const currentYearData = filterCurrentYear(riwayat);
+    const limitedData = currentYearData.slice(0, 52);
+    const { yaCount, total } = calculateRingkasan(limitedData);
+    updateRingkasanUI(yaCount, total);
+    renderRiwayat(limitedData);
   </script>
 </body>
 </html>
