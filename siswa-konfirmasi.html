@@ -15,6 +15,11 @@
       align-items: center;
     }
 
+    .logo {
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
     .logo img {
       max-width: 180px;
       width: 100%;
@@ -128,11 +133,34 @@
       text-decoration: underline;
     }
 
-    .riwayat-foto {
-      margin-top: 0.3rem;
-      max-width: 80px;
+    #riwayatList {
+      list-style: none;
+      padding: 0;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    #riwayatList li {
+      margin-bottom: 0.5rem;
+      padding: 0.5rem;
+      border-bottom: 1px dashed #ccc;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    #riwayatList li img {
+      width: 48px;
+      height: 48px;
+      object-fit: cover;
       border-radius: 8px;
       box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+    }
+
+    #riwayatList li div.text-content {
+      flex: 1;
+      font-size: 0.9rem;
+      color: #444;
     }
 
     @media (max-width: 400px) {
@@ -157,6 +185,11 @@
       .tips-box {
         font-size: 0.85rem;
       }
+
+      #riwayatList li img {
+        width: 40px;
+        height: 40px;
+      }
     }
   </style>
 </head>
@@ -176,7 +209,8 @@
       <button onclick="submitResponse('Tidak')">❌ Tidak</button>
     </div>
 
-    <input type="file" accept="image/*" capture="environment" id="photoInput" onchange="previewPhoto(event)" />
+    <input type="file" accept="image/*" capture="environment" id="photoInput" onchange="handlePhotoChange(event)" />
+
     <img id="photoPreview" class="image-preview" style="display: none;" alt="Foto Konfirmasi" />
 
     <div id="alasanBox">
@@ -186,121 +220,143 @@
     <div class="tips-box" id="tipsBox"></div>
   </div>
 
+  <!-- Riwayat -->
   <div class="card-box" style="margin-top: 1rem; max-width: 400px;">
     <h3>Riwayat Minum</h3>
-    <ul id="riwayatList" style="list-style: none; padding: 0;"></ul>
+    <ul id="riwayatList"></ul>
     <div class="lihat-riwayat">
       <a href="siswa-riwayat.html">Lihat Semua Riwayat</a>
     </div>
   </div>
 
-  <script>
-    function updateDateTime() {
-      const now = new Date();
-      const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
-      const day = days[now.getDay()];
-      const date = now.toLocaleDateString('id-ID');
-      const time = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-      document.getElementById('dateTimeInfo').textContent = `Hari: ${day}, Tanggal: ${date}, Jam: ${time}`;
-    }
+<script>
+  let tempAnswer = null;
+  let tempTanggal = null;
+  let tempWaktu = null;
 
-    function submitResponse(answer) {
-      const now = new Date();
-      const tanggal = now.toLocaleDateString('id-ID');
-      const waktu = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+  function updateDateTime() {
+    const now = new Date();
+    const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+    const day = days[now.getDay()];
+    const date = now.toLocaleDateString('id-ID');
+    const time = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+    document.getElementById('dateTimeInfo').textContent = `Hari: ${day}, Tanggal: ${date}, Jam: ${time}`;
+  }
 
-      if (answer === 'Ya') {
-        document.getElementById('photoInput').click();
+  function submitResponse(answer) {
+    const now = new Date();
+    tempTanggal = now.toLocaleDateString('id-ID');
+    tempWaktu = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+    if (answer === 'Ya') {
+      tempAnswer = 'Ya';
+      // Reset photo preview and input
+      document.getElementById('photoPreview').style.display = 'none';
+      document.getElementById('photoPreview').src = '';
+      document.getElementById('photoInput').value = '';
+      document.getElementById('alasanBox').style.display = 'none';
+      document.getElementById('alasanText').textContent = '';
+
+      // Open file dialog for photo
+      document.getElementById('photoInput').click();
+    } else {
+      tempAnswer = 'Tidak';
+      const reason = prompt("Apa alasan kamu tidak minum tablet tambah darah hari ini?");
+      if (reason && reason.trim() !== "") {
+        document.getElementById('alasanText').textContent = reason;
+        document.getElementById('alasanBox').style.display = 'block';
+        alert(`Jawaban "Tidak" dan alasan berhasil disimpan.`);
+        saveRiwayat(tempTanggal, tempWaktu, tempAnswer, reason, "");
       } else {
-        const reason = prompt("Apa alasan kamu tidak minum tablet tambah darah hari ini?");
-        if (reason) {
-          document.getElementById('alasanText').textContent = reason;
-          document.getElementById('alasanBox').style.display = 'block';
-          alert(`Jawaban "Tidak" dan alasan berhasil disimpan.`);
-          saveRiwayat(tanggal, waktu, answer, reason);
-        } else {
-          alert("Jawaban 'Tidak' dibatalkan karena tidak ada alasan yang diisi.");
-        }
+        alert("Jawaban 'Tidak' dibatalkan karena tidak ada alasan yang diisi.");
       }
     }
+  }
 
-    function previewPhoto(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const fotoBase64 = e.target.result;
-          const img = document.getElementById('photoPreview');
-          img.src = fotoBase64;
-          img.style.display = 'block';
-
-          const now = new Date();
-          const tanggal = now.toLocaleDateString('id-ID');
-          const waktu = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-
-          alert(`Jawaban "Ya" berhasil disimpan beserta bukti foto.`);
-          saveRiwayat(tanggal, waktu, 'Ya', '', fotoBase64);
-        };
-        reader.readAsDataURL(file);
-      }
+  function handlePhotoChange(event) {
+    const file = event.target.files[0];
+    if (!file) {
+      alert("Foto harus dipilih untuk konfirmasi 'Ya'.");
+      return;
     }
 
-    function saveRiwayat(tanggal, waktu, jawaban, alasan = "", foto = "") {
-      let riwayat = JSON.parse(localStorage.getItem("riwayatTTD")) || [];
-      riwayat.unshift({ tanggal, waktu, jawaban, alasan, foto });
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const base64Image = e.target.result;
 
-      if (riwayat.length > 50) {
-        riwayat = riwayat.slice(0, 50);
-      }
+      const img = document.getElementById('photoPreview');
+      img.src = base64Image;
+      img.style.display = 'block';
 
-      localStorage.setItem("riwayatTTD", JSON.stringify(riwayat));
-      renderRiwayat();
+      alert(`Jawaban "Ya" berhasil disimpan beserta bukti foto.`);
+
+      saveRiwayat(tempTanggal, tempWaktu, tempAnswer, "", base64Image);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function saveRiwayat(tanggal, waktu, jawaban, alasan = "", foto = "") {
+    let riwayat = JSON.parse(localStorage.getItem("riwayatTTD")) || [];
+    riwayat.unshift({ tanggal, waktu, jawaban, alasan, foto });
+
+    if (riwayat.length > 52) {
+      riwayat = riwayat.slice(0, 52);
     }
 
-    function renderRiwayat() {
-      const list = document.getElementById('riwayatList');
-      list.innerHTML = '';
-      const riwayat = JSON.parse(localStorage.getItem("riwayatTTD")) || [];
-
-      const tampil = riwayat.slice(0, 7);
-      if (tampil.length === 0) {
-        list.innerHTML = '<li>Tidak ada data riwayat.</li>';
-        return;
-      }
-
-      tampil.forEach(item => {
-        const li = document.createElement('li');
-        li.style.marginBottom = '0.5rem';
-        li.style.padding = '0.5rem';
-        li.style.borderBottom = '1px dashed #ccc';
-
-        let isi = `<strong>${item.jawaban === 'Ya' ? '✅ Ya' : '❌ Tidak'}</strong> - ${item.tanggal}, ${item.waktu}`;
-        if (item.alasan) isi += `<br><em>Alasan:</em> ${item.alasan}`;
-        if (item.foto) isi += `<br><img src="${item.foto}" class="riwayat-foto" alt="Bukti Foto" />`;
-
-        li.innerHTML = isi;
-        list.appendChild(li);
-      });
-    }
-
-    const tips = [
-      "💧 Minumlah tablet tambah darah setelah makan malam agar tidak mual.",
-      "📍 Simpan tablet di tempat yang terlihat agar tidak lupa.",
-      "🚫 Hindari teh atau kopi setelah minum tablet.",
-      "👭 Ajak teman minum bareng agar lebih semangat.",
-      "📆 Konsisten minum tiap minggu untuk tubuh yang kuat!"
-    ];
-
-    function showRandomTip() {
-      const randomIndex = Math.floor(Math.random() * tips.length);
-      document.getElementById('tipsBox').textContent = " " + tips[randomIndex];
-    }
-
-    setInterval(showRandomTip, 5000);
-
-    updateDateTime();
-    showRandomTip();
+    localStorage.setItem("riwayatTTD", JSON.stringify(riwayat));
     renderRiwayat();
-  </script>
+  }
+
+  function renderRiwayat() {
+    const list = document.getElementById('riwayatList');
+    list.innerHTML = '';
+    const riwayat = JSON.parse(localStorage.getItem("riwayatTTD")) || [];
+
+    const tampil = riwayat.slice(0, 7);
+    if (tampil.length === 0) {
+      list.innerHTML = '<li>Tidak ada data riwayat.</li>';
+      return;
+    }
+
+    tampil.forEach(item => {
+      const li = document.createElement('li');
+
+      // Thumbnail foto, hanya jika jawaban "Ya" dan foto ada
+      let thumbHTML = '';
+      if (item.jawaban === 'Ya' && item.foto) {
+        thumbHTML = `<img src="${item.foto}" alt="Foto Bukti" />`;
+      }
+
+      const textContent = document.createElement('div');
+      textContent.className = 'text-content';
+      textContent.innerHTML = `<strong>${item.jawaban === 'Ya' ? '✅ Ya' : '❌ Tidak'}</strong> - ${item.tanggal}, ${item.waktu}${item.alasan ? `<br><em>Alasan:</em> ${item.alasan}` : ''}`;
+
+      li.innerHTML = thumbHTML;
+      li.appendChild(textContent);
+
+      list.appendChild(li);
+    });
+  }
+
+  const tips = [
+    "💧 Minumlah tablet tambah darah setelah makan malam agar tidak mual.",
+    "📍 Simpan tablet di tempat yang terlihat agar tidak lupa.",
+    "🚫 Hindari teh atau kopi setelah minum tablet.",
+    "👭 Ajak teman minum bareng agar lebih semangat.",
+    "📆 Konsisten minum tiap minggu untuk tubuh yang kuat!"
+  ];
+
+  function showRandomTip() {
+    const randomIndex = Math.floor(Math.random() * tips.length);
+    document.getElementById('tipsBox').textContent = " " + tips[randomIndex];
+  }
+
+  setInterval(showRandomTip, 5000);
+
+  updateDateTime();
+  showRandomTip();
+  renderRiwayat();
+
+</script>
 </body>
 </html>
