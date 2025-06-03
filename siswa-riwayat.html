@@ -3,127 +3,126 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Analisis Risiko Anemia</title>
+  <title>Semua Riwayat Minum TTD</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 2rem;
-      background: #fff0f5;
+      background-color: #fff4f8;
       color: #333;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
     }
 
-    .card {
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(240, 98, 146, 0.2);
-      padding: 2rem;
-      max-width: 400px;
-      width: 100%;
-      margin-bottom: 2rem;
+    h1 {
       text-align: center;
-    }
-
-    .progress-container {
-      background: #eee;
-      border-radius: 30px;
-      overflow: hidden;
-      height: 30px;
-      margin-top: 1rem;
-      margin-bottom: 1rem;
-    }
-
-    .progress-bar {
-      height: 100%;
-      background: #d81b60;
-      width: 0%;
-      color: white;
-      text-align: center;
-      line-height: 30px;
-      font-weight: bold;
-      transition: width 0.8s ease;
-    }
-
-    .risk-result {
-      font-size: 1.1rem;
-      font-weight: bold;
-      margin-top: 1rem;
       color: #d81b60;
     }
 
-    .footer {
-      font-size: 0.9rem;
-      color: #666;
-      margin-top: 2rem;
+    .riwayat-container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 1.5rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(216, 27, 96, 0.1);
+    }
+
+    .riwayat-item {
+      border-bottom: 1px solid #eee;
+      padding: 1rem 0;
+    }
+
+    .riwayat-item:last-child {
+      border-bottom: none;
+    }
+
+    .status {
+      font-weight: bold;
+    }
+
+    .foto-thumb {
+      width: 70px;
+      border-radius: 8px;
+      margin-top: 0.5rem;
+    }
+
+    .back-link {
+      display: block;
+      margin: 2rem auto 0;
+      text-align: center;
+    }
+
+    .back-link a {
+      color: #d81b60;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 0.5rem 1rem;
+      border: 2px solid #d81b60;
+      border-radius: 8px;
+      background-color: #fff0f5;
+      transition: all 0.3s ease;
+    }
+
+    .back-link a:hover {
+      background-color: #ffdce7;
+    }
+
+    @media (max-width: 480px) {
+      body {
+        margin: 1rem;
+      }
+
+      .riwayat-container {
+        padding: 1rem;
+      }
+
+      .foto-thumb {
+        width: 60px;
+      }
     }
   </style>
 </head>
 <body>
+  <h1>Semua Riwayat Minum</h1>
 
-  <div class="card">
-    <h2>Analisis Risiko Anemia</h2>
-    <p>Periode: Januari – Desember</p>
-
-    <div class="progress-container">
-      <div class="progress-bar" id="progressBar">0%</div>
-    </div>
-
-    <div class="risk-result" id="riskResult">Menghitung...</div>
+  <div class="riwayat-container" id="semuaRiwayat">
+    <!-- Riwayat akan ditampilkan di sini -->
   </div>
 
-  <div class="footer">
-    Berdasarkan standar WHO: minimal 52 tablet TTD per tahun.
+  <div class="back-link">
+    <a href="siswa-konfirmasi.html">⬅ Kembali ke Halaman Utama</a>
   </div>
 
   <script>
-    function hitungKonsumsiValid() {
-      const data = JSON.parse(localStorage.getItem("riwayatTTD")) || [];
-      const thisYear = new Date().getFullYear();
-      let validCount = 0;
+    function renderSemuaRiwayat() {
+      const riwayat = JSON.parse(localStorage.getItem("riwayatTTD")) || [];
+      const container = document.getElementById("semuaRiwayat");
 
-      data.forEach(item => {
-        const tanggalParts = item.tanggal.split("/");
-        const day = parseInt(tanggalParts[0]);
-        const month = parseInt(tanggalParts[1]) - 1; // month is 0-indexed
-        const year = parseInt(tanggalParts[2]);
-        const dateObj = new Date(year, month, day);
-
-        const isYa = item.jawaban === "Ya";
-        const hasPhoto = item.foto !== undefined || item.hasPhoto === true; // extensible
-        const isThisYear = dateObj.getFullYear() === thisYear;
-
-        if (isYa && hasPhoto && isThisYear) {
-          validCount++;
-        }
-      });
-
-      return validCount;
-    }
-
-    function tampilkanAnalisis() {
-      const konsumsi = hitungKonsumsiValid();
-      const target = 52;
-      const persen = Math.round((konsumsi / target) * 100);
-      const bar = document.getElementById("progressBar");
-      bar.style.width = Math.min(persen, 100) + "%";
-      bar.textContent = `${persen}%`;
-
-      let risiko = "Menghitung...";
-      if (konsumsi >= 52) {
-        risiko = "✅ Risiko Rendah (Sangat Baik)";
-      } else if (konsumsi >= 36) {
-        risiko = "⚠️ Risiko Sedang (Perlu Ditingkatkan)";
-      } else {
-        risiko = "❌ Risiko Tinggi (Bahaya Anemia)";
+      if (riwayat.length === 0) {
+        container.innerHTML = "<p>Tidak ada data riwayat yang tersimpan.</p>";
+        return;
       }
 
-      document.getElementById("riskResult").textContent = risiko;
+      riwayat.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "riwayat-item";
+
+        const status = item.jawaban === "Ya" ? "✅ Ya" : "❌ Tidak";
+        const alasan = item.alasan ? `<br><em>Alasan:</em> ${item.alasan}` : "";
+        const foto = item.foto ? `<br><img src="${item.foto}" class="foto-thumb">` : "";
+
+        div.innerHTML = `
+          <div class="status">${status}</div>
+          <div>Tanggal: ${item.tanggal}</div>
+          <div>Waktu: ${item.waktu}</div>
+          ${alasan}
+          ${foto}
+        `;
+
+        container.appendChild(div);
+      });
     }
 
-    tampilkanAnalisis();
+    renderSemuaRiwayat();
   </script>
 </body>
 </html>
-
