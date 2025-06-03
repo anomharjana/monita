@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Menu dalam Card Box - Navigasi</title>
   <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
     body {
       font-family: Arial, sans-serif;
       margin: 2rem;
@@ -46,6 +49,8 @@
       align-items: center;
       justify-content: center;
       gap: 2rem;
+      /* supaya anak elemen tidak terpotong */
+      overflow: visible;
     }
 
     .ringkasan-card.low {
@@ -68,19 +73,21 @@
       height: 80px;
       position: relative;
       flex-shrink: 0;
+      padding: 5px; /* beri ruang agar tidak terpotong */
     }
 
     .progress-circle svg {
       transform: rotate(-90deg);
       width: 80px;
       height: 80px;
+      display: block;
     }
 
     .progress-circle circle {
       fill: none;
       stroke-width: 10;
       stroke-linecap: round;
-      transition: stroke-dashoffset 1s ease;
+      transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .progress-bg {
@@ -101,6 +108,7 @@
 
     .ringkasan-text {
       text-align: left;
+      min-width: 130px;
     }
 
     .ringkasan-text .jumlah {
@@ -197,11 +205,21 @@
       .progress-circle {
         width: 60px;
         height: 60px;
+        padding: 3px;
       }
 
       .progress-circle svg {
         width: 60px;
         height: 60px;
+      }
+
+      .progress-circle circle {
+        stroke-width: 8;
+      }
+
+      .ringkasan-text {
+        min-width: unset;
+        text-align: center;
       }
 
       .ringkasan-text .jumlah {
@@ -244,7 +262,7 @@
     <img src="https://res.cloudinary.com/djexglfns/image/upload/v1748920768/WhatsApp_Image_2025-06-03_at_11.17.29_AM-removebg-preview_bjfu6l.png" alt="Logo Aplikasi" />
   </div>
 
-  <div id="ringkasanContainer" class="ringkasan-card">
+  <div id="ringkasanContainer" class="ringkasan-card" aria-live="polite" aria-atomic="true">
     Memuat data ringkasan...
   </div>
 
@@ -322,11 +340,14 @@
         </div>
       `;
 
-      // Animasi progress stroke dashoffset
+      // Animasi progress stroke dashoffset (lebih smooth)
       const progressBar = container.querySelector(".progress-bar");
+      // Mulai dari full offset (0 progress)
+      progressBar.style.strokeDashoffset = circumference;
+      // Trigger animasi ke offset yg benar
       setTimeout(() => {
         progressBar.style.strokeDashoffset = offset;
-      }, 100); // delay supaya animasi jalan
+      }, 50);
     }
 
     // Jalankan saat halaman siap
