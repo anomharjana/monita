@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -75,7 +76,10 @@
 
     select,
     input[type="text"],
-    input[type="password"] {
+    input[type="password"],
+    input[type="email"],
+    input[type="date"],
+    input[type="tel"] {
       width: 100%;
       padding: 0.75rem;
       border: 1px solid #ccc;
@@ -112,13 +116,14 @@
       .login-box {
         padding: 1.5rem;
       }
+
       .logo img {
         max-width: 120px;
       }
     }
 
-    /* Popup styling */
-    #popup {
+    /* Popup Logo */
+    #popup-logo {
       position: fixed;
       top: 0;
       left: 0;
@@ -129,15 +134,15 @@
       justify-content: center;
       align-items: center;
       z-index: 1000;
+    }
+
+    #popup-logo.hidden {
+      opacity: 0;
+      pointer-events: none;
       transition: opacity 0.5s ease;
     }
 
-    #popup.hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    #popup img {
+    #popup-logo img {
       max-width: 180px;
       animation: popIn 1s ease;
     }
@@ -147,18 +152,78 @@
         transform: scale(0.7);
         opacity: 0;
       }
+
       100% {
         transform: scale(1);
         opacity: 1;
       }
     }
+
+    /* Popup Registrasi */
+    #registration-popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(255, 255, 255, 0.95);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    #registration-box {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      width: 90%;
+      max-width: 400px;
+    }
+
+    #registration-box h3 {
+      text-align: center;
+      color: #d81b60;
+      margin-bottom: 1.5rem;
+    }
   </style>
 </head>
+
 <body>
 
-  <!-- Popup -->
-  <div id="popup">
+  <!-- Popup Logo -->
+  <div id="popup-logo">
     <img src="https://res.cloudinary.com/djexglfns/image/upload/v1748921969/WhatsApp_Image_2025-06-03_at_11.37.35_AM-removebg-preview_b8nr8a.png" alt="Logo Aplikasi" />
+  </div>
+
+  <!-- Popup Registrasi -->
+  <div id="registration-popup">
+    <form id="registration-box" onsubmit="saveUserProfile(event)">
+      <h3>Registrasi Pengguna Baru</h3>
+
+      <div class="form-group">
+        <label for="regNama">Nama:</label>
+        <input type="text" id="regNama" required />
+      </div>
+      <div class="form-group">
+        <label for="regTanggal">Tanggal Lahir:</label>
+        <input type="date" id="regTanggal" required />
+      </div>
+      <div class="form-group">
+        <label for="regHP">Nomor HP:</label>
+        <input type="tel" id="regHP" required />
+      </div>
+      <div class="form-group">
+        <label for="regEmail">Email:</label>
+        <input type="email" id="regEmail" required />
+      </div>
+      <div class="form-group">
+        <label for="regPekerjaan">Pekerjaan:</label>
+        <input type="text" id="regPekerjaan" />
+      </div>
+      <button type="submit">Simpan</button>
+    </form>
   </div>
 
   <div class="logo">
@@ -193,13 +258,37 @@
   </div>
 
   <script>
-    // Tampilkan popup saat load
+    // Tampilkan popup logo saat load
     window.addEventListener('load', () => {
-      const popup = document.getElementById('popup');
+      const popup = document.getElementById('popup-logo');
       setTimeout(() => {
         popup.classList.add('hidden');
-      }, 2000); // tampil selama 2 detik
+
+        // Cek apakah user sudah registrasi
+        const profile = localStorage.getItem("userProfile");
+        if (!profile) {
+          document.getElementById("registration-popup").style.display = "flex";
+        }
+      }, 2000); // tampil 2 detik
     });
+
+    // Simpan data user setelah registrasi
+    function saveUserProfile(event) {
+      event.preventDefault();
+
+      const profile = {
+        nama: document.getElementById("regNama").value.trim(),
+        tanggalLahir: document.getElementById("regTanggal").value,
+        nomorHP: document.getElementById("regHP").value.trim(),
+        email: document.getElementById("regEmail").value.trim(),
+        pekerjaan: document.getElementById("regPekerjaan").value.trim(),
+        riwayatTTD: []
+      };
+
+      localStorage.setItem("userProfile", JSON.stringify(profile));
+      document.getElementById("registration-popup").style.display = "none";
+      alert("Data berhasil disimpan!");
+    }
 
     // Login handler
     function handleLogin(event) {
@@ -209,12 +298,11 @@
       const username = document.getElementById('username').value.trim().toLowerCase();
       const password = document.getElementById('password').value;
 
-      // Data login standar
       const validUsers = {
-        siswa:     { username: 'siswa', password: '123' },
-        orangtua:  { username: 'ortu',  password: '123' },
-        guru:      { username: 'guru',  password: '123' },
-        petugas:   { username: 'petugas', password: '123' }
+        siswa: { username: 'siswa', password: '123' },
+        orangtua: { username: 'ortu', password: '123' },
+        guru: { username: 'guru', password: '123' },
+        petugas: { username: 'petugas', password: '123' }
       };
 
       if (!role || !username || !password) {
@@ -231,4 +319,5 @@
     }
   </script>
 </body>
+
 </html>
