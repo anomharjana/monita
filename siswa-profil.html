@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -50,11 +51,13 @@
       text-align: left;
       margin-bottom: 1rem;
     }
+
     .profile-info div {
       margin-bottom: 0.4rem;
       font-size: 1rem;
       color: #6a1b4d;
     }
+
     .profile-info label {
       font-weight: 700;
       color: #d81b60;
@@ -82,9 +85,11 @@
       text-align: center;
       user-select: none;
     }
+
     .btn:hover:not(:disabled) {
       background: #ad1457;
     }
+
     .btn:disabled {
       background-color: #ccc;
       cursor: not-allowed;
@@ -103,6 +108,9 @@
     }
   </style>
 </head>
+<!-- (Seluruh isi tag <head> dan <style> tetap sama seperti sebelumnya) -->
+<!-- Ganti bagian <body> mulai dari sini: -->
+
 <body>
 
   <div class="logo">
@@ -114,6 +122,7 @@
     <div class="profile-info" id="profileInfo">
       <!-- Profil user akan tampil di sini -->
     </div>
+    <button class="btn" id="btnEditProfile">Edit Profil</button>
     <button class="btn" id="btnGenerateCard">Generate Kartu Riwayat TTD</button>
     <button class="btn" id="btnDownloadCard" disabled style="display:none;">Download Kartu</button>
     <div id="canvasContainer" aria-label="Kartu Riwayat TTD"></div>
@@ -122,30 +131,20 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
   <script>
-    // Ambil data profil dari localStorage, fallback ke default jika belum ada
     function getUserProfile() {
       const stored = localStorage.getItem("userProfile");
       if (stored) {
         try {
           const parsed = JSON.parse(stored);
-          if (!Array.isArray(parsed.riwayatTTD)) {
-            parsed.riwayatTTD = [];
-          }
+          if (!Array.isArray(parsed.riwayatTTD)) parsed.riwayatTTD = [];
           return parsed;
         } catch {
-          // jika error parsing, kembalikan default
+          return null;
         }
       }
-      return {
-        nama: "Dewi Sari",
-        email: "dewi.sari@email.com",
-        tanggalLahir: "1994-01-01",
-        pekerjaan: "Guru",
-        riwayatTTD: []
-      };
+      return null;
     }
 
-    // Hitung usia otomatis dari tanggal lahir
     function calculateAge(tanggalLahir) {
       const today = new Date();
       const birthDate = new Date(tanggalLahir);
@@ -157,7 +156,6 @@
       return age;
     }
 
-    // Hitung skor minum TTD
     function getScore(profile) {
       const riwayat = profile.riwayatTTD || [];
       return riwayat.reduce((acc, item) => {
@@ -168,9 +166,9 @@
       }, 0);
     }
 
-    // Render profil ke UI
     function updateProfileUI() {
       const profile = getUserProfile();
+      if (!profile) return;
       const age = calculateAge(profile.tanggalLahir || "1994-01-01");
       const score = getScore(profile);
       const profileDiv = document.getElementById("profileInfo");
@@ -184,29 +182,21 @@
       `;
     }
 
-    // Popup registrasi data user (hanya jika data belum ada)
-    function showRegistrationPopup() {
-      const profile = getUserProfile();
-      if (profile.nama && profile.email && profile.tanggalLahir) {
-        // Sudah ada data, langsung tampilkan
-        updateProfileUI();
-        return;
-      }
-
-      let nama = "";
-      let tanggalLahir = "";
-      let nomorHP = "";
-      let email = "";
+    function promptUserData(existing = null) {
+      let nama = existing?.nama || "";
+      let tanggalLahir = existing?.tanggalLahir || "";
+      let nomorHP = existing?.nomorHP || "";
+      let email = existing?.email || "";
+      let pekerjaan = existing?.pekerjaan || "";
 
       do {
-        nama = prompt("Masukkan Nama Anda:");
-        if (nama === null) return; // cancel
+        nama = prompt("Masukkan Nama Anda:", nama);
+        if (nama === null) return null;
       } while (!nama || nama.trim().length === 0);
 
       do {
-        tanggalLahir = prompt("Masukkan Tanggal Lahir Anda (YYYY-MM-DD):");
-        if (tanggalLahir === null) return; // cancel
-        // validasi tanggal lahir format sederhana
+        tanggalLahir = prompt("Masukkan Tanggal Lahir (YYYY-MM-DD):", tanggalLahir);
+        if (tanggalLahir === null) return null;
         if (!/^\d{4}-\d{2}-\d{2}$/.test(tanggalLahir)) {
           alert("Format tanggal lahir harus YYYY-MM-DD");
           tanggalLahir = "";
@@ -214,63 +204,73 @@
       } while (!tanggalLahir);
 
       do {
-        nomorHP = prompt("Masukkan Nomor HP Anda:");
-        if (nomorHP === null) return; // cancel
+        nomorHP = prompt("Masukkan Nomor HP:", nomorHP);
+        if (nomorHP === null) return null;
       } while (!nomorHP || nomorHP.trim().length === 0);
 
       do {
-        email = prompt("Masukkan Email Anda:");
-        if (email === null) return; // cancel
-        // validasi email sederhana
+        email = prompt("Masukkan Email:", email);
+        if (email === null) return null;
         if (!/\S+@\S+\.\S+/.test(email)) {
           alert("Format email tidak valid");
           email = "";
         }
       } while (!email);
 
-      // Simpan ke localStorage
-      const userProfile = {
+      pekerjaan = prompt("Masukkan Pekerjaan Anda:", pekerjaan || "") || pekerjaan;
+
+      return {
         nama: nama.trim(),
         tanggalLahir: tanggalLahir.trim(),
         nomorHP: nomorHP.trim(),
         email: email.trim(),
-        pekerjaan: "Belum diisi",
-        riwayatTTD: []
+        pekerjaan: pekerjaan.trim(),
+        riwayatTTD: existing?.riwayatTTD || [],
       };
+    }
 
-      localStorage.setItem("userProfile", JSON.stringify(userProfile));
+    function initProfile() {
+      const existing = getUserProfile();
+
+      if (existing) {
+        const confirmEdit = confirm("Data profil sudah ada. Apakah Anda ingin mengubahnya?");
+        if (confirmEdit) {
+          const updated = promptUserData(existing);
+          if (updated) {
+            localStorage.setItem("userProfile", JSON.stringify(updated));
+          }
+        }
+      } else {
+        const data = promptUserData();
+        if (data) {
+          localStorage.setItem("userProfile", JSON.stringify(data));
+        }
+      }
+
       updateProfileUI();
     }
 
-    // Fungsi untuk generate kartu di canvas
     function generateCard() {
       const profile = getUserProfile();
       const age = calculateAge(profile.tanggalLahir || "1994-01-01");
       const score = getScore(profile);
-
       const risiko = score >= 40 ? "Rendah" : score >= 20 ? "Sedang" : "Tinggi";
 
-      // Hapus canvas lama jika ada
       const container = document.getElementById("canvasContainer");
       container.innerHTML = "";
-
       const canvas = document.createElement("canvas");
       canvas.width = 420;
       canvas.height = 300;
       container.appendChild(canvas);
-
       const ctx = canvas.getContext("2d");
 
-      // Background
       ctx.fillStyle = "#fff0f5";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Border
       ctx.strokeStyle = "#d81b60";
       ctx.lineWidth = 5;
       ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
 
-      // Title
       ctx.fillStyle = "#d81b60";
       ctx.font = "bold 22px Segoe UI, sans-serif";
       ctx.textAlign = "center";
@@ -308,20 +308,11 @@
       ctx.font = "16px Segoe UI, sans-serif";
       ctx.fillText(risiko, 120, 230);
 
-      // Generate QR code on a hidden div then draw it on canvas
       const qrData = {
-        profil: {
-          nama: profile.nama,
-          email: profile.email,
-          usia: age,
-          pekerjaan: profile.pekerjaan,
-          skor: score,
-          risiko: risiko,
-        },
+        profil: { nama: profile.nama, email: profile.email, usia: age, pekerjaan: profile.pekerjaan, skor: score, risiko: risiko },
         riwayatTTD: profile.riwayatTTD
       };
 
-      // Create temporary div for QR code
       const tempDiv = document.createElement("div");
       tempDiv.style.position = "absolute";
       tempDiv.style.left = "-9999px";
@@ -337,26 +328,18 @@
       });
 
       setTimeout(() => {
-        try {
-          // Get QR image element
-          const img = tempDiv.querySelector("img") || tempDiv.querySelector("canvas");
-          if (img) {
-            ctx.drawImage(img, canvas.width - 140, canvas.height - 140, 120, 120);
-          }
-        } catch (e) {
-          console.error("Gagal menggambar QR code:", e);
+        const img = tempDiv.querySelector("img") || tempDiv.querySelector("canvas");
+        if (img) {
+          ctx.drawImage(img, canvas.width - 140, canvas.height - 140, 120, 120);
         }
-        // Buang temp div QR code
         tempDiv.remove();
       }, 100);
 
-      // Tampilkan tombol download dan aktifkan
       const btnDownload = document.getElementById("btnDownloadCard");
       btnDownload.style.display = "block";
       btnDownload.disabled = false;
     }
 
-    // Download kartu dari canvas
     function downloadCard() {
       const canvas = document.querySelector("#canvasContainer canvas");
       if (!canvas) {
@@ -369,17 +352,21 @@
       link.click();
     }
 
-    // Event listeners
     document.getElementById("btnGenerateCard").addEventListener("click", generateCard);
     document.getElementById("btnDownloadCard").addEventListener("click", downloadCard);
+    document.getElementById("btnEditProfile").addEventListener("click", () => {
+      const existing = getUserProfile();
+      const updated = promptUserData(existing);
+      if (updated) {
+        localStorage.setItem("userProfile", JSON.stringify(updated));
+        updateProfileUI();
+      }
+    });
 
-    // Saat halaman load
     window.onload = () => {
-      showRegistrationPopup();
-      updateProfileUI();
+      initProfile();
     };
   </script>
-
 </body>
-</html>
 
+</html>
