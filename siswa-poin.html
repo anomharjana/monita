@@ -1,1 +1,266 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Point dan Edukasi Minum TTD</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 2rem 1rem;
+      background: #ffeef5;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .logo {
+      margin-bottom: 2rem;
+      text-align: center;
+      width: 180px;
+    }
+
+    .logo img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+    }
+
+    .card-box {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(240, 98, 146, 0.2);
+      padding: 2rem;
+      max-width: 420px;
+      width: 100%;
+      margin-bottom: 1.5rem;
+      box-sizing: border-box;
+    }
+
+    h2 {
+      color: #d81b60;
+      margin-bottom: 1rem;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .score-number {
+      font-size: 3.5rem;
+      color: #d81b60;
+      font-weight: 900;
+      text-align: center;
+      margin-bottom: 0.25rem;
+    }
+
+    .badge {
+      font-weight: 700;
+      text-align: center;
+      background: #fce4ec;
+      color: #ad1457;
+      padding: 0.5rem 1rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(208, 81, 139, 0.3);
+      width: fit-content;
+      margin: 0 auto;
+    }
+
+    .edu-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .tip-card {
+      background: #fff1f7;
+      border-left: 5px solid #ec407a;
+      border-radius: 12px;
+      padding: 1rem 1.2rem;
+      box-shadow: 0 2px 8px rgba(236, 64, 122, 0.1);
+      position: relative;
+      transition: background 0.3s ease;
+    }
+
+    .tip-card.read {
+      background-color: #fce4ec;
+      opacity: 0.8;
+    }
+
+    .tip-card h4 {
+      margin: 0 0 0.4rem;
+      color: #ad1457;
+      font-size: 1rem;
+    }
+
+    .tip-card p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: #6a1b4d;
+    }
+
+    .tip-card button {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: #d81b60;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 0.3rem 0.6rem;
+      font-size: 0.7rem;
+      cursor: pointer;
+    }
+
+    .tip-card button:hover {
+      background-color: #ad1457;
+    }
+
+    .load-more {
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    .load-more button {
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      background: #d81b60;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .load-more button:hover {
+      background: #ad1457;
+    }
+
+    @media (min-width: 480px) {
+      .edu-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="logo">
+    <img src="https://res.cloudinary.com/djexglfns/image/upload/v1748920768/WhatsApp_Image_2025-06-03_at_11.17.29_AM-removebg-preview_bjfu6l.png" alt="Logo Aplikasi" />
+  </div>
+
+  <div class="card-box">
+    <h2>Point Minum TTD</h2>
+    <div class="score-number" id="scoreNumber">0</div>
+    <div class="badge" id="badgeLevel">Pemula</div>
+  </div>
+
+  <div class="card-box">
+    <h2>Edukasi Kesehatan</h2>
+    <div class="edu-grid" id="tipsGrid"></div>
+    <div class="load-more" id="loadMoreContainer">
+      <button onclick="renderTips()">Tampilkan Lebih Banyak</button>
+    </div>
+  </div>
+
+  <script>
+    function getBadgeLevel(score) {
+      if (score >= 40) return "Konsisten 🏅";
+      if (score >= 20) return "Rajin 🎖️";
+      return "Pemula 🌸";
+    }
+
+    function getScore() {
+      const riwayat = JSON.parse(localStorage.getItem("riwayatTTD")) || [];
+      return riwayat.reduce((acc, item) => {
+        if (item.jawaban === "Ya" && item.foto && item.foto !== "") {
+          return acc + 1;
+        }
+        return acc;
+      }, 0);
+    }
+
+    function updateScoreUI() {
+      const score = getScore();
+      document.getElementById("scoreNumber").textContent = score;
+      document.getElementById("badgeLevel").textContent = getBadgeLevel(score);
+    }
+
+    const staticTips = [
+      "Minumlah tablet tambah darah setelah makan malam agar tidak mual.",
+      "Simpan tablet di tempat yang terlihat agar tidak lupa.",
+      "Hindari teh atau kopi setelah minum tablet.",
+      "Ajak teman minum bareng agar lebih semangat.",
+      "Konsisten minum tiap minggu untuk tubuh yang kuat!",
+      "Minum air putih cukup setiap hari.",
+      "Tidur cukup membantu penyerapan zat besi.",
+      "Makan buah tinggi vitamin C seperti jeruk.",
+      "Periksa kesehatan rutin di posyandu.",
+      "Hindari makanan cepat saji berlebihan.",
+      "Konsumsi makanan kaya zat besi seperti hati dan bayam."
+    ];
+
+    let loadedTips = 0;
+    const batchSize = 4;
+
+    function loadReadTips() {
+      return JSON.parse(localStorage.getItem("readTips")) || {};
+    }
+
+    function saveReadTips(data) {
+      localStorage.setItem("readTips", JSON.stringify(data));
+    }
+
+    function toggleRead(index) {
+      const readData = loadReadTips();
+      if (readData[index]) {
+        delete readData[index];
+      } else {
+        readData[index] = true;
+      }
+      saveReadTips(readData);
+      refreshTipsGrid(); // update all
+    }
+
+    function refreshTipsGrid() {
+      const tipsGrid = document.getElementById("tipsGrid");
+      tipsGrid.innerHTML = "";
+      const readData = loadReadTips();
+
+      for (let i = 0; i < loadedTips; i++) {
+        const card = document.createElement("div");
+        card.className = "tip-card" + (readData[i] ? " read" : "");
+
+        const title = document.createElement("h4");
+        title.textContent = `Tips ${i + 1}`;
+
+        const text = document.createElement("p");
+        text.textContent = staticTips[i];
+
+        const btn = document.createElement("button");
+        btn.textContent = readData[i] ? "Dibaca ✅" : "Tandai";
+        btn.onclick = () => toggleRead(i);
+
+        card.appendChild(title);
+        card.appendChild(text);
+        card.appendChild(btn);
+        tipsGrid.appendChild(card);
+      }
+    }
+
+    function renderTips() {
+      const previousLoaded = loadedTips;
+      loadedTips = Math.min(loadedTips + batchSize, staticTips.length);
+      refreshTipsGrid();
+
+      if (loadedTips >= staticTips.length) {
+        document.getElementById("loadMoreContainer").style.display = "none";
+      }
+    }
+
+    updateScoreUI();
+    renderTips(); // initial load
+  </script>
+
+</body>
+</html>
 
