@@ -106,22 +106,25 @@
       width: 100%;
       text-align: center;
     }
+
+    canvas,
+    img {
+      max-width: 100%;
+      height: auto;
+    }
   </style>
 </head>
-<!-- (Seluruh isi tag <head> dan <style> tetap sama seperti sebelumnya) -->
-<!-- Ganti bagian <body> mulai dari sini: -->
 
 <body>
 
   <div class="logo">
-    <img src="https://res.cloudinary.com/djexglfns/image/upload/v1748920768/WhatsApp_Image_2025-06-03_at_11.17.29_AM-removebg-preview_bjfu6l.png" alt="Logo Aplikasi" />
+    <img src="https://res.cloudinary.com/djexglfns/image/upload/v1748920768/WhatsApp_Image_2025-06-03_at_11.17.29_AM-removebg-preview_bjfu6l.png"
+      alt="Logo Aplikasi" />
   </div>
 
   <div class="card-box" aria-label="Profil User">
     <h2>Profil User</h2>
-    <div class="profile-info" id="profileInfo">
-      <!-- Profil user akan tampil di sini -->
-    </div>
+    <div class="profile-info" id="profileInfo"></div>
     <button class="btn" id="btnEditProfile">Edit Profil</button>
     <button class="btn" id="btnGenerateCard">Generate Kartu Riwayat TTD</button>
     <button class="btn" id="btnDownloadCard" disabled style="display:none;">Download Kartu</button>
@@ -313,27 +316,34 @@
         riwayatTTD: profile.riwayatTTD
       };
 
-      const tempDiv = document.createElement("div");
-      tempDiv.style.position = "absolute";
-      tempDiv.style.left = "-9999px";
-      document.body.appendChild(tempDiv);
+      const qrTemp = document.createElement("div");
+      qrTemp.style.position = "absolute";
+      qrTemp.style.left = "-9999px";
+      document.body.appendChild(qrTemp);
 
-      const qr = new QRCode(tempDiv, {
+      const qr = new QRCode(qrTemp, {
         text: JSON.stringify(qrData),
         width: 120,
         height: 120,
-        colorDark: "#d81b60",
-        colorLight: "#fff0f5",
+        colorDark: "#000000",
+        colorLight: "#ffffff",
         correctLevel: QRCode.CorrectLevel.H
       });
 
       setTimeout(() => {
-        const img = tempDiv.querySelector("img") || tempDiv.querySelector("canvas");
-        if (img) {
-          ctx.drawImage(img, canvas.width - 140, canvas.height - 140, 120, 120);
+        const qrImg = qrTemp.querySelector("img") || qrTemp.querySelector("canvas");
+        if (qrImg) {
+          const img = new Image();
+          img.onload = () => {
+            ctx.drawImage(img, canvas.width - 140, canvas.height - 140, 120, 120);
+            qrTemp.remove();
+          };
+          img.src = qrImg.src || qrImg.toDataURL("image/png");
+        } else {
+          alert("QR Code gagal ditampilkan.");
+          qrTemp.remove();
         }
-        tempDiv.remove();
-      }, 100);
+      }, 300);
 
       const btnDownload = document.getElementById("btnDownloadCard");
       btnDownload.style.display = "block";
