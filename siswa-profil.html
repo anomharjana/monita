@@ -1,1 +1,385 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Profil User dan Edukasi Minum TTD</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 2rem 1rem;
+      background: #ffeef5;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .logo {
+      margin-bottom: 2rem;
+      text-align: center;
+      width: 180px;
+    }
+
+    .logo img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+    }
+
+    .card-box {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(240, 98, 146, 0.2);
+      padding: 2rem;
+      max-width: 420px;
+      width: 100%;
+      margin-bottom: 1.5rem;
+      box-sizing: border-box;
+    }
+
+    h2 {
+      color: #d81b60;
+      margin-bottom: 1rem;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .profile-info {
+      text-align: left;
+      margin-bottom: 1rem;
+    }
+    .profile-info div {
+      margin-bottom: 0.4rem;
+      font-size: 1rem;
+      color: #6a1b4d;
+    }
+    .profile-info label {
+      font-weight: 700;
+      color: #d81b60;
+    }
+
+    #qrcode {
+      margin: 1rem auto 0;
+      width: 200px;
+      height: 200px;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 0.6rem 1rem;
+      background: #d81b60;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: background-color 0.3s;
+      text-align: center;
+      user-select: none;
+    }
+    .btn:hover:not(:disabled) {
+      background: #ad1457;
+    }
+    .btn:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+      color: #666;
+    }
+
+    #canvasContainer {
+      margin-top: 1rem;
+      box-shadow: 0 4px 8px rgba(216, 27, 96, 0.3);
+      border-radius: 16px;
+      background-color: #fff0f5;
+      padding: 1rem;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="logo">
+    <img src="https://res.cloudinary.com/djexglfns/image/upload/v1748920768/WhatsApp_Image_2025-06-03_at_11.17.29_AM-removebg-preview_bjfu6l.png" alt="Logo Aplikasi" />
+  </div>
+
+  <div class="card-box" aria-label="Profil User">
+    <h2>Profil User</h2>
+    <div class="profile-info" id="profileInfo">
+      <!-- Profil user akan tampil di sini -->
+    </div>
+    <button class="btn" id="btnGenerateCard">Generate Kartu Riwayat TTD</button>
+    <button class="btn" id="btnDownloadCard" disabled style="display:none;">Download Kartu</button>
+    <div id="canvasContainer" aria-label="Kartu Riwayat TTD"></div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <script>
+    // Ambil data profil dari localStorage, fallback ke default jika belum ada
+    function getUserProfile() {
+      const stored = localStorage.getItem("userProfile");
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          if (!Array.isArray(parsed.riwayatTTD)) {
+            parsed.riwayatTTD = [];
+          }
+          return parsed;
+        } catch {
+          // jika error parsing, kembalikan default
+        }
+      }
+      return {
+        nama: "Dewi Sari",
+        email: "dewi.sari@email.com",
+        tanggalLahir: "1994-01-01",
+        pekerjaan: "Guru",
+        riwayatTTD: []
+      };
+    }
+
+    // Hitung usia otomatis dari tanggal lahir
+    function calculateAge(tanggalLahir) {
+      const today = new Date();
+      const birthDate = new Date(tanggalLahir);
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      return age;
+    }
+
+    // Hitung skor minum TTD
+    function getScore(profile) {
+      const riwayat = profile.riwayatTTD || [];
+      return riwayat.reduce((acc, item) => {
+        if (item.jawaban === "Ya" && item.foto && item.foto !== "") {
+          return acc + 1;
+        }
+        return acc;
+      }, 0);
+    }
+
+    // Render profil ke UI
+    function updateProfileUI() {
+      const profile = getUserProfile();
+      const age = calculateAge(profile.tanggalLahir || "1994-01-01");
+      const score = getScore(profile);
+      const profileDiv = document.getElementById("profileInfo");
+
+      profileDiv.innerHTML = `
+        <div><label>Nama:</label> ${profile.nama}</div>
+        <div><label>Email:</label> ${profile.email}</div>
+        <div><label>Usia:</label> ${age} tahun</div>
+        <div><label>Pekerjaan:</label> ${profile.pekerjaan}</div>
+        <div><label>Skor Minum TTD:</label> ${score}</div>
+      `;
+    }
+
+    // Popup registrasi data user (hanya jika data belum ada)
+    function showRegistrationPopup() {
+      const profile = getUserProfile();
+      if (profile.nama && profile.email && profile.tanggalLahir) {
+        // Sudah ada data, langsung tampilkan
+        updateProfileUI();
+        return;
+      }
+
+      let nama = "";
+      let tanggalLahir = "";
+      let nomorHP = "";
+      let email = "";
+
+      do {
+        nama = prompt("Masukkan Nama Anda:");
+        if (nama === null) return; // cancel
+      } while (!nama || nama.trim().length === 0);
+
+      do {
+        tanggalLahir = prompt("Masukkan Tanggal Lahir Anda (YYYY-MM-DD):");
+        if (tanggalLahir === null) return; // cancel
+        // validasi tanggal lahir format sederhana
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(tanggalLahir)) {
+          alert("Format tanggal lahir harus YYYY-MM-DD");
+          tanggalLahir = "";
+        }
+      } while (!tanggalLahir);
+
+      do {
+        nomorHP = prompt("Masukkan Nomor HP Anda:");
+        if (nomorHP === null) return; // cancel
+      } while (!nomorHP || nomorHP.trim().length === 0);
+
+      do {
+        email = prompt("Masukkan Email Anda:");
+        if (email === null) return; // cancel
+        // validasi email sederhana
+        if (!/\S+@\S+\.\S+/.test(email)) {
+          alert("Format email tidak valid");
+          email = "";
+        }
+      } while (!email);
+
+      // Simpan ke localStorage
+      const userProfile = {
+        nama: nama.trim(),
+        tanggalLahir: tanggalLahir.trim(),
+        nomorHP: nomorHP.trim(),
+        email: email.trim(),
+        pekerjaan: "Belum diisi",
+        riwayatTTD: []
+      };
+
+      localStorage.setItem("userProfile", JSON.stringify(userProfile));
+      updateProfileUI();
+    }
+
+    // Fungsi untuk generate kartu di canvas
+    function generateCard() {
+      const profile = getUserProfile();
+      const age = calculateAge(profile.tanggalLahir || "1994-01-01");
+      const score = getScore(profile);
+
+      const risiko = score >= 40 ? "Rendah" : score >= 20 ? "Sedang" : "Tinggi";
+
+      // Hapus canvas lama jika ada
+      const container = document.getElementById("canvasContainer");
+      container.innerHTML = "";
+
+      const canvas = document.createElement("canvas");
+      canvas.width = 420;
+      canvas.height = 300;
+      container.appendChild(canvas);
+
+      const ctx = canvas.getContext("2d");
+
+      // Background
+      ctx.fillStyle = "#fff0f5";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Border
+      ctx.strokeStyle = "#d81b60";
+      ctx.lineWidth = 5;
+      ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
+
+      // Title
+      ctx.fillStyle = "#d81b60";
+      ctx.font = "bold 22px Segoe UI, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("Kartu Riwayat Minum TTD", canvas.width / 2, 40);
+
+      ctx.textAlign = "left";
+      ctx.fillStyle = "#6a1b4d";
+      ctx.font = "bold 16px Segoe UI, sans-serif";
+      ctx.fillText("Nama:", 20, 80);
+      ctx.font = "16px Segoe UI, sans-serif";
+      ctx.fillText(profile.nama, 120, 80);
+
+      ctx.font = "bold 16px Segoe UI, sans-serif";
+      ctx.fillText("Email:", 20, 110);
+      ctx.font = "16px Segoe UI, sans-serif";
+      ctx.fillText(profile.email, 120, 110);
+
+      ctx.font = "bold 16px Segoe UI, sans-serif";
+      ctx.fillText("Usia:", 20, 140);
+      ctx.font = "16px Segoe UI, sans-serif";
+      ctx.fillText(age + " tahun", 120, 140);
+
+      ctx.font = "bold 16px Segoe UI, sans-serif";
+      ctx.fillText("Pekerjaan:", 20, 170);
+      ctx.font = "16px Segoe UI, sans-serif";
+      ctx.fillText(profile.pekerjaan, 120, 170);
+
+      ctx.font = "bold 16px Segoe UI, sans-serif";
+      ctx.fillText("Skor Minum TTD:", 20, 200);
+      ctx.font = "16px Segoe UI, sans-serif";
+      ctx.fillText(score, 170, 200);
+
+      ctx.font = "bold 16px Segoe UI, sans-serif";
+      ctx.fillText("Risiko TTD:", 20, 230);
+      ctx.font = "16px Segoe UI, sans-serif";
+      ctx.fillText(risiko, 120, 230);
+
+      // Generate QR code on a hidden div then draw it on canvas
+      const qrData = {
+        profil: {
+          nama: profile.nama,
+          email: profile.email,
+          usia: age,
+          pekerjaan: profile.pekerjaan,
+          skor: score,
+          risiko: risiko,
+        },
+        riwayatTTD: profile.riwayatTTD
+      };
+
+      // Create temporary div for QR code
+      const tempDiv = document.createElement("div");
+      tempDiv.style.position = "absolute";
+      tempDiv.style.left = "-9999px";
+      document.body.appendChild(tempDiv);
+
+      const qr = new QRCode(tempDiv, {
+        text: JSON.stringify(qrData),
+        width: 120,
+        height: 120,
+        colorDark: "#d81b60",
+        colorLight: "#fff0f5",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+
+      setTimeout(() => {
+        try {
+          // Get QR image element
+          const img = tempDiv.querySelector("img") || tempDiv.querySelector("canvas");
+          if (img) {
+            ctx.drawImage(img, canvas.width - 140, canvas.height - 140, 120, 120);
+          }
+        } catch (e) {
+          console.error("Gagal menggambar QR code:", e);
+        }
+        // Buang temp div QR code
+        tempDiv.remove();
+      }, 100);
+
+      // Tampilkan tombol download dan aktifkan
+      const btnDownload = document.getElementById("btnDownloadCard");
+      btnDownload.style.display = "block";
+      btnDownload.disabled = false;
+    }
+
+    // Download kartu dari canvas
+    function downloadCard() {
+      const canvas = document.querySelector("#canvasContainer canvas");
+      if (!canvas) {
+        alert("Kartu belum digenerate.");
+        return;
+      }
+      const link = document.createElement("a");
+      link.download = "kartu_riwayat_ttd.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    }
+
+    // Event listeners
+    document.getElementById("btnGenerateCard").addEventListener("click", generateCard);
+    document.getElementById("btnDownloadCard").addEventListener("click", downloadCard);
+
+    // Saat halaman load
+    window.onload = () => {
+      showRegistrationPopup();
+      updateProfileUI();
+    };
+  </script>
+
+</body>
+</html>
 
