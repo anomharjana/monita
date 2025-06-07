@@ -95,6 +95,25 @@
       50% { opacity: 0.4; }
     }
 
+    .tips-menstruasi {
+      background-color: #fff3f7;
+      border-left: 4px solid #ec407a;
+      padding: 1rem;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #c2185b;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(236, 64, 122, 0.2);
+      margin-top: 1rem;
+      animation: fadeInMenstruasi 0.6s ease-in;
+    }
+
+    @keyframes fadeInMenstruasi {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     .image-preview {
       margin-top: 1rem;
       max-width: 100%;
@@ -143,16 +162,23 @@
         max-width: 300px;
       }
 
+      .button-group {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
       .button-group button {
         padding: 0.6rem 1rem;
-        font-size: 0.8rem;
+        font-size: 0.85rem;
+        width: 100%;
+        justify-content: center;
       }
 
       .logo img {
         max-width: 120px;
       }
 
-      .tips-box {
+      .tips-box, .tips-menstruasi {
         font-size: 0.85rem;
       }
     }
@@ -164,29 +190,38 @@
     <img src="https://res.cloudinary.com/djexglfns/image/upload/v1748920768/WhatsApp_Image_2025-06-03_at_11.17.29_AM-removebg-preview_bjfu6l.png" alt="Logo Aplikasi" />
   </div>
 
+  <!-- Card Menstruasi -->
+  <div class="card-box">
+    <div class="form-info">Apakah kamu sedang menstruasi hari ini?</div>
+    <div class="button-group">
+      <button onclick="submitMenstruasi('Ya')">✅ Ya</button>
+      <button onclick="submitMenstruasi('Tidak')">❌ Tidak</button>
+    </div>
+    <div id="tipsMenstruasiBox" class="tips-menstruasi" style="display: none;">
+      🌸 Minumlah tablet tambah darah setiap hari selama menstruasi.
+    </div>
+  </div>
+
+  <!-- Card Konfirmasi Minum -->
   <div class="card-box">
     <div class="form-info" id="dateTimeInfo">
       Hari: ..., Tanggal: ..., Jam: ...
     </div>
-
     <div class="button-group">
-      <button onclick="submitResponse('Ya')">✅ Ya</button>
+      <button onclick="submitResponse('Ya')">✅ Minum TTD </button>
       <button onclick="submitResponse('Tidak')">❌ Tidak</button>
     </div>
-
     <input type="file" accept="image/*" capture="environment" id="photoInput" onchange="handlePhotoChange(event)" />
-
     <img id="photoPreview" class="image-preview" style="display: none;" alt="Foto Konfirmasi" />
-
     <div id="alasanBox">
       <strong>Alasan tidak minum:</strong> <span id="alasanText"></span>
     </div>
-
     <div class="tips-box" id="tipsBox"></div>
   </div>
 
+  <!-- Card Riwayat -->
   <div class="card-box" style="margin-top: 1rem; max-width: 400px;">
-    <h3>Riwayat Minum</h3>
+    <h3>Riwayat Minum TTD dan Menstruasi</h3>
     <ul id="riwayatList" style="list-style: none; padding: 0;"></ul>
     <div class="lihat-riwayat">
       <a href="siswa-riwayat.html">Lihat Semua Riwayat</a>
@@ -203,6 +238,20 @@
       const date = now.toLocaleDateString('id-ID');
       const time = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
       document.getElementById('dateTimeInfo').textContent = `Hari: ${day}, Tanggal: ${date}, Jam: ${time}`;
+    }
+
+    function submitMenstruasi(jawaban) {
+      const now = new Date();
+      const tanggal = now.toLocaleDateString('id-ID');
+      const waktu = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+      if (jawaban === 'Ya') {
+        document.getElementById('tipsMenstruasiBox').style.display = 'block';
+      } else {
+        document.getElementById('tipsMenstruasiBox').style.display = 'none';
+      }
+
+      saveRiwayat(tanggal, waktu, `Menstruasi: ${jawaban}`, "", "");
     }
 
     function submitResponse(answer) {
@@ -302,7 +351,7 @@
         const fotoHTML = item.foto ? `<br><img src="${item.foto}" style="width:60px; border-radius:8px; margin-top:4px;">` : '';
         const alasanHTML = item.alasan ? `<br><em>Alasan:</em> ${item.alasan}` : '';
 
-        li.innerHTML = `<strong>${item.jawaban === 'Ya' ? '✅ Ya' : '❌ Tidak'}</strong> - ${item.tanggal}, ${item.waktu}${alasanHTML}${fotoHTML}`;
+        li.innerHTML = `<strong>${item.jawaban}</strong> - ${item.tanggal}, ${item.waktu}${alasanHTML}${fotoHTML}`;
         list.appendChild(li);
       });
     }
@@ -321,7 +370,6 @@
     }
 
     setInterval(showRandomTip, 5000);
-
     updateDateTime();
     showRandomTip();
     renderRiwayat();
