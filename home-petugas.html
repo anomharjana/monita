@@ -1,1 +1,330 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pemantauan Minum TTD - Petugas Kesehatan</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background: #fce4ec; /* soft pink background */
+  }
+  h1 {
+    color: #880e4f; /* dark pink/maroon */
+  }
+  select, input, button, textarea {
+    padding: 8px;
+    margin: 5px 0;
+    width: 100%;
+    max-width: 300px;
+    box-sizing: border-box;
+    border: 1px solid #f48fb1; /* light pink border */
+    border-radius: 4px;
+  }
+  button {
+    background-color: #e91e63; /* bright pink button */
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  button:hover {
+    background-color: #ad1457; /* darker pink on hover */
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 800px;
+    margin-top: 10px;
+  }
+  th, td {
+    border: 1px solid #f48fb1;
+    padding: 8px;
+    text-align: left;
+  }
+  th {
+    background-color: #e91e63;
+    color: white;
+  }
+  .container {
+    margin-bottom: 40px;
+  }
+  .tabs {
+    display: flex;
+    margin-bottom: 10px;
+    cursor: pointer;
+  }
+  .tab {
+    padding: 10px 20px;
+    background: #f8bbd0; /* light pink */
+    margin-right: 2px;
+    border-radius: 5px 5px 0 0;
+    color: #880e4f;
+  }
+  .tab.active {
+    background: #e91e63;
+    color: white;
+  }
+  .tab-content {
+    background: white;
+    padding: 15px;
+    border: 1px solid #e91e63;
+    border-radius: 0 5px 5px 5px;
+  }
+  #chartContainer {
+    max-width: 700px;
+  }
+</style>
+
+</head>
+<body>
+
+<div class="wrapper">
+
+  <h1>Pemantauan Minum Tablet Tambah Darah (TTD)</h1>
+
+  <!-- Tabs navigation -->
+  <div class="tabs">
+    <div class="tab active" data-tab="data">Data Sekolah & Siswi</div>
+    <div class="tab" data-tab="input">Input Konsumsi TTD</div>
+    <div class="tab" data-tab="monitoring">Monitoring & Grafik</div>
+    <div class="tab" data-tab="laporan">Laporan & Export</div>
+    <div class="tab" data-tab="pengingat">Pengingat & Edukasi</div>
+  </div>
+
+  <!-- Tab Contents -->
+  <div class="tab-content" id="data">
+    <label for="sekolahSelect">Pilih Sekolah:</label>
+    <select id="sekolahSelect">
+      <option value="">-- Pilih Sekolah --</option>
+      <option value="SMP1">SMP Negeri 1</option>
+      <option value="SMP2">SMP Negeri 2</option>
+      <option value="SMP3">SMP Negeri 3</option>
+    </select>
+
+    <h3>Daftar Siswi</h3>
+    <table id="siswiTable">
+      <thead>
+        <tr>
+          <th>Nama</th>
+          <th>Kelas</th>
+          <th>Umur</th>
+          <th>Catatan Kesehatan</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Data siswi akan muncul di sini -->
+      </tbody>
+    </table>
+  </div>
+
+  <div class="tab-content" id="input" style="display:none;">
+    <h3>Input Konsumsi TTD</h3>
+    <label for="tanggalInput">Tanggal:</label>
+    <input type="date" id="tanggalInput" />
+
+    <label for="siswiInput">Pilih Siswi:</label>
+    <select id="siswiInput">
+      <option value="">-- Pilih Siswi --</option>
+    </select>
+
+    <label for="jumlahTablet">Jumlah Tablet:</label>
+    <input type="number" id="jumlahTablet" min="0" value="1" />
+
+    <label for="catatanInput">Catatan (opsional):</label>
+    <textarea id="catatanInput" rows="2"></textarea>
+
+    <button id="submitKonsumsi">Simpan Konsumsi</button>
+  </div>
+
+  <div class="tab-content" id="monitoring" style="display:none;">
+    <h3>Monitoring Konsumsi</h3>
+    <div id="chartContainer">
+      <canvas id="konsumsiChart"></canvas>
+    </div>
+  </div>
+
+  <div class="tab-content" id="laporan" style="display:none;">
+    <h3>Laporan & Export</h3>
+    <button id="exportExcel">Export ke Excel</button>
+    <button id="exportPDF">Export ke PDF</button>
+    <p style="margin-top:10px; font-size: 14px; color: #7f8c8d;">*Fitur export masih dummy, perlu integrasi backend</p>
+  </div>
+
+  <div class="tab-content" id="pengingat" style="display:none;">
+    <h3>Pengingat & Edukasi</h3>
+    <p>Pengingat: Jangan lupa cek konsumsi TTD harian di setiap sekolah.</p>
+    <p>Edukasi: Anemia adalah kondisi kurang darah yang dapat dicegah dengan konsumsi tablet tambah darah secara rutin.</p>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Data dummy siswi per sekolah
+const dataSiswi = {
+  SMP1: [
+    {id:1, nama:"Sari", kelas:"7A", umur:13, catatan:"Sehat"},
+    {id:2, nama:"Dewi", kelas:"7B", umur:14, catatan:"Riwayat anemia"},
+  ],
+  SMP2: [
+    {id:3, nama:"Rina", kelas:"8A", umur:14, catatan:"Sehat"},
+    {id:4, nama:"Maya", kelas:"8B", umur:15, catatan:"Sehat"},
+  ],
+  SMP3: [
+    {id:5, nama:"Lina", kelas:"9A", umur:15, catatan:"Sedang sakit"},
+  ]
+};
+
+// Data konsumsi TTD per siswi {siswiId: [{tanggal: 'YYYY-MM-DD', jumlah: n, catatan: '...'}]}
+const konsumsiTTD = {};
+
+// Fungsi tampilkan siswi di tabel dan dropdown input
+function tampilkanSiswi(sekolah){
+  const tbody = document.querySelector("#siswiTable tbody");
+  const selectSiswiInput = document.getElementById("siswiInput");
+  tbody.innerHTML = "";
+  selectSiswiInput.innerHTML = '<option value="">-- Pilih Siswi --</option>';
+
+  if(!sekolah || !dataSiswi[sekolah]) return;
+
+  dataSiswi[sekolah].forEach(s => {
+    // Tabel
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${s.nama}</td><td>${s.kelas}</td><td>${s.umur}</td><td>${s.catatan}</td>`;
+    tbody.appendChild(tr);
+
+    // Dropdown input konsumsi
+    const option = document.createElement("option");
+    option.value = s.id;
+    option.textContent = s.nama + " (" + s.kelas + ")";
+    selectSiswiInput.appendChild(option);
+  });
+}
+
+// Tab switching
+const tabs = document.querySelectorAll(".tab");
+const contents = document.querySelectorAll(".tab-content");
+tabs.forEach(tab => {
+  tab.addEventListener("click", () => {
+    tabs.forEach(t => t.classList.remove("active"));
+    contents.forEach(c => c.style.display = "none");
+
+    tab.classList.add("active");
+    document.getElementById(tab.dataset.tab).style.display = "block";
+
+    if(tab.dataset.tab === "monitoring"){
+      updateChart();
+    }
+  });
+});
+
+// Ketika sekolah dipilih
+document.getElementById("sekolahSelect").addEventListener("change", e => {
+  tampilkanSiswi(e.target.value);
+});
+
+// Simpan konsumsi TTD
+document.getElementById("submitKonsumsi").addEventListener("click", () => {
+  const tanggal = document.getElementById("tanggalInput").value;
+  const siswiId = document.getElementById("siswiInput").value;
+  const jumlah = parseInt(document.getElementById("jumlahTablet").value);
+  const catatan = document.getElementById("catatanInput").value.trim();
+
+  if(!tanggal || !siswiId || isNaN(jumlah) || jumlah < 0){
+    alert("Mohon isi tanggal, siswi, dan jumlah tablet dengan benar.");
+    return;
+  }
+
+  if(!konsumsiTTD[siswiId]){
+    konsumsiTTD[siswiId] = [];
+  }
+  konsumsiTTD[siswiId].push({tanggal, jumlah, catatan});
+
+  alert("Data konsumsi TTD berhasil disimpan.");
+
+  // Reset form
+  document.getElementById("tanggalInput").value = "";
+  document.getElementById("siswiInput").value = "";
+  document.getElementById("jumlahTablet").value = 1;
+  document.getElementById("catatanInput").value = "";
+});
+
+// Grafik konsumsi TTD
+const ctx = document.getElementById('konsumsiChart').getContext('2d');
+let konsumsiChart = new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: [], // tanggal
+    datasets: [{
+      label: 'Jumlah Tablet',
+      data: [],
+      backgroundColor: 'rgba(41, 128, 185, 0.85)',
+      borderRadius: 4,
+      maxBarThickness: 35
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: { mode: 'index', intersect: false }
+    },
+    scales: {
+      x: {
+        title: { display: true, text: 'Tanggal' },
+        grid: { display: false }
+      },
+      y: {
+        title: { display: true, text: 'Jumlah Tablet' },
+        beginAtZero: true,
+        grid: { color: '#eee' },
+        ticks: { stepSize: 1 }
+      }
+    }
+  }
+});
+
+function updateChart(){
+  const sekolah = document.getElementById("sekolahSelect").value;
+  if(!sekolah || !dataSiswi[sekolah]){
+    konsumsiChart.data.labels = [];
+    konsumsiChart.data.datasets[0].data = [];
+    konsumsiChart.update();
+    return;
+  }
+
+  const konsumsiPerTanggal = {};
+
+  dataSiswi[sekolah].forEach(s => {
+    if(konsumsiTTD[s.id]){
+      konsumsiTTD[s.id].forEach(k => {
+        if(!konsumsiPerTanggal[k.tanggal]){
+          konsumsiPerTanggal[k.tanggal] = 0;
+        }
+        konsumsiPerTanggal[k.tanggal] += k.jumlah;
+      });
+    }
+  });
+
+  const labels = Object.keys(konsumsiPerTanggal).sort();
+  const dataJumlah = labels.map(tgl => konsumsiPerTanggal[tgl]);
+
+  konsumsiChart.data.labels = labels;
+  konsumsiChart.data.datasets[0].data = dataJumlah;
+  konsumsiChart.update();
+}
+
+// Tombol export dummy
+document.getElementById("exportExcel").addEventListener("click", () => {
+  alert("Fitur export ke Excel akan dikembangkan pada backend.");
+});
+document.getElementById("exportPDF").addEventListener("click", () => {
+  alert("Fitur export ke PDF akan dikembangkan pada backend.");
+});
+</script>
+
+</body>
+</html>
 
