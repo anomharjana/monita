@@ -155,6 +155,25 @@
     #dataAnakModal button:hover {
       background: #ad1457;
     }
+
+    /* Alarm test button styling */
+    .alarm-test-btn {
+      display: inline-block;
+      margin-top: 1rem;
+      background: #d81b60;
+      color: white;
+      border: none;
+      padding: 0.8rem 1.4rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      user-select: none;
+    }
+
+    .alarm-test-btn:hover {
+      background: #ad1457;
+    }
   </style>
 </head>
 <body>
@@ -191,17 +210,18 @@
     </div>
 
     <h3>Informasi Kesehatan Anak</h3>
-    <div id="infoAnak" class="info-card">
-      <!-- Data anak akan dimasukkan di sini -->
-    </div>
+    <div id="infoAnak" class="info-card"></div>
 
     <h3>Tanya Petugas atau Guru</h3>
     <div class="tanya-card">
       <label for="pertanyaan">Tulis pertanyaan atau saran Anda:</label><br>
       <textarea id="pertanyaan" rows="4" placeholder="Contoh: Anak saya merasa pusing setelah minum TTD..."></textarea>
-      <br>
+      <br />
       <button onclick="alert('Pertanyaan Anda telah dikirim.')">Kirim</button>
     </div>
+
+    <!-- Tombol untuk tes alarm manual -->
+    <button class="alarm-test-btn" id="testAlarmBtn">🔔 Tes Alarm Manual</button>
   </div>
 
   <!-- Modal input data anak -->
@@ -222,7 +242,10 @@
     </div>
   </div>
 
+  <audio id="alarmSound" src="https://www.soundjay.com/button/beep-07.mp3" preload="auto"></audio>
+
   <script>
+    // --- Fungsi utama untuk manajemen data dan UI ---
     function filterCurrentYear(data) {
       const thisYear = new Date().getFullYear();
       return data.filter(entry => {
@@ -310,7 +333,7 @@
       }
     }
 
-    // Proses simpan data anak dari modal
+    // Simpan data anak dari modal
     document.getElementById("formDataAnak").addEventListener("submit", function(e) {
       e.preventDefault();
       const nama = document.getElementById("namaAnak").value.trim();
@@ -342,7 +365,83 @@
     }
 
     init();
+
+    // --- Fitur Pengingat Minum TTD setiap hari Senin jam 9 pagi ---
+    function setupWeeklyReminder() {
+      const now = new Date();
+      const day = now.getDay(); // Minggu=0 ... Senin=1 ...
+      const hour = now.getHours();
+      const minutes = now.getMinutes();
+
+      // Jika hari ini bukan Senin jam 9 pagi, set timeout ke Senin jam 9 pagi berikutnya
+      // Kalau sudah lewat jam 9 pagi Senin ini, set ke Senin depan
+      let daysUntilMonday = (1 - day + 7) % 7;
+      let targetDate = new Date(now);
+      targetDate.setHours(9, 0, 0, 0);
+      targetDate.setDate(now.getDate() + daysUntilMonday);
+
+      if (now > targetDate) {
+        // Sudah lewat jam 9 pagi Senin ini, ke Senin depan
+        targetDate.setDate(targetDate.getDate() + 7);
+      }
+
+      const timeoutMs = targetDate - now;
+
+      setTimeout(() => {
+        triggerReminder();
+        // Setelah sekali trigger, set interval mingguan tiap 7 hari
+        setInterval(triggerReminder, 7 * 24 * 60 * 60 * 1000);
+      }, timeoutMs);
+    }
+
+    function triggerReminder() {
+      if (Notification.permission === "granted") {
+        new Notification("Pengingat Minum TTD", {
+          body: "Ingat! Hari ini Senin, saatnya anak minum tablet TTD.",
+          icon: "https://cdn-icons-png.flaticon.com/512/2885/2885431.png"
+        });
+      } else {
+        Notification.requestPermission().then(permission => {
+          if (permission === "granted") {
+            triggerReminder();
+          }
+        });
+      }
+    }
+
+    setupWeeklyReminder();
+
+    // --- Tombol Tes Alarm Manual dengan suara dan notifikasi berulang ---
+    const alarmSound = document.getElementById("alarmSound");
+    const testAlarmBtn = document.getElementById("testAlarmBtn");
+
+    testAlarmBtn.addEventListener("click", async () => {
+      if (Notification.permission !== "granted") {
+        await Notification.requestPermission();
+      }
+
+      if (Notification.permission === "granted") {
+        new Notification("Tes Alarm", {
+          body: "Ini adalah tes alarm suara dan notifikasi.",
+          icon: "https://cdn-icons-png.flaticon.com/512/2885/2885431.png"
+        });
+
+        let count = 0;
+        const intervalId = setInterval(() => {
+          alarmSound.pause();
+          alarmSound.currentTime = 0;
+          alarmSound.play().catch(e => console.warn("Audio play error:", e));
+
+          count++;
+          if (count >= 6) clearInterval(intervalId);
+        }, 10000);
+
+        // Mainkan satu kali segera
+        alarmSound.play().catch(e => console.warn("Audio play error:", e));
+      } else {
+        alert("Izin notifikasi ditolak, tidak bisa menampilkan alarm.");
+      }
+    });
   </script>
 </body>
 </html>
-
