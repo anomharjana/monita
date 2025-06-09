@@ -1,1 +1,633 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Monitoring Minum Tablet Tambah Darah - Guru</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem;
+      background: #fff0f4;
+      color: #333;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: auto;
+    }
+
+    h2, h3 {
+      color: #c2185b;
+    }
+
+    .summary-card, .riwayat-card, .info-card, .tanya-card, .alarm-card, .input-card {
+      background-color: white;
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px rgba(240, 98, 146, 0.15);
+      margin-bottom: 2rem;
+    }
+
+    .summary-title {
+      font-size: 1.3rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .summary-value {
+      font-size: 2rem;
+      font-weight: bold;
+    }
+
+    .risk-status {
+      font-weight: bold;
+      margin-top: 0.5rem;
+    }
+
+    .risk-rendah { color: green; }
+    .risk-sedang { color: orange; }
+    .risk-tinggi { color: red; }
+
+    .progress-circle {
+      width: 100px;
+      height: 100px;
+    }
+
+    .riwayat-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .riwayat-thumbnail {
+      width: 64px;
+      height: 64px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .riwayat-detail {
+      flex: 1;
+    }
+
+    .riwayat-detail strong {
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    .info-card ul {
+      padding-left: 1.2rem;
+    }
+
+    .info-card li {
+      margin-bottom: 0.5rem;
+    }
+
+    .tanya-card textarea {
+      width: 100%;
+      border: 1px solid #ccc;
+      padding: 0.5rem;
+      border-radius: 8px;
+      resize: vertical;
+    }
+
+    .tanya-card button {
+      margin-top: 0.75rem;
+      background: #d81b60;
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .tanya-card button:hover {
+      background: #ad1457;
+    }
+
+    .input-card label {
+      display: block;
+      font-weight: bold;
+      margin-top: 1rem;
+    }
+
+    .input-card input[type="text"],
+    .input-card input[type="date"],
+    .input-card select,
+    .input-card input[type="number"] {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.3rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+
+    .input-card button {
+      margin-top: 1rem;
+      background: #c2185b;
+      color: white;
+      border: none;
+      padding: 0.7rem 1.3rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .input-card button:hover {
+      background: #ad1457;
+    }
+
+    /* Pop-up form styles */
+    #editSiswiModal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    #editSiswiModal .modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+
+    #editSiswiModal label {
+      display: block;
+      margin-bottom: 0.25rem;
+      font-weight: bold;
+    }
+
+    #editSiswiModal input, #editSiswiModal select {
+      width: 100%;
+      padding: 0.4rem;
+      margin-bottom: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+
+    #editSiswiModal button {
+      background: #c2185b;
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      width: 100%;
+    }
+
+    #editSiswiModal button:hover {
+      background: #ad1457;
+    }
+
+    /* Alarm test button styling */
+    .alarm-test-btn {
+      display: inline-block;
+      margin-top: 1rem;
+      background: #d81b60;
+      color: white;
+      border: none;
+      padding: 0.8rem 1.4rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      user-select: none;
+    }
+
+    .alarm-test-btn:hover {
+      background: #ad1457;
+    }
+
+    /* Alarm add form */
+    .alarm-card label {
+      display: block;
+      margin-top: 0.75rem;
+      font-weight: bold;
+    }
+
+    .alarm-card input, .alarm-card select {
+      width: 100%;
+      padding: 0.4rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      margin-top: 0.3rem;
+    }
+
+    .alarm-card button.add-alarm-btn {
+      margin-top: 1rem;
+      background: #388e3c;
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 1rem;
+    }
+
+    .alarm-card button.add-alarm-btn:hover {
+      background: #2e7d32;
+    }
+
+    /* Daftar alarm */
+    .alarm-list {
+      margin-top: 1rem;
+    }
+
+    .alarm-list-item {
+      background: #fce4ec;
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .alarm-list-item button.delete-alarm-btn {
+      background: #d32f2f;
+      border: none;
+      color: white;
+      border-radius: 8px;
+      padding: 0.2rem 0.6rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background-color 0.3s;
+    }
+
+    .alarm-list-item button.delete-alarm-btn:hover {
+      background: #9a0007;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Monitoring Minum Tablet Tambah Darah - Guru</h2>
+
+    <!-- Input Konsumsi Harian -->
+    <div class="input-card">
+      <h3>Input Konsumsi Tablet Tambah Darah Hari Ini</h3>
+      <label for="tanggalInput">Tanggal:</label>
+      <input type="date" id="tanggalInput" />
+
+      <label for="namaSiswi">Nama Siswi:</label>
+      <input type="text" id="namaSiswi" placeholder="Masukkan nama siswi" />
+
+      <label for="kelasSiswi">Kelas:</label>
+      <input type="text" id="kelasSiswi" placeholder="Masukkan kelas siswi" />
+
+      <label for="konsumsiTablet">Jumlah Tablet Diminum (1 tablet = dosis harian):</label>
+      <input type="number" id="konsumsiTablet" min="0" max="1" value="1" />
+
+      <button id="btnSimpanKonsumsi">Simpan Konsumsi</button>
+    </div>
+
+    <!-- Summary Card -->
+    <div class="summary-card">
+      <div>
+        <div class="summary-title">Total Konsumsi Mingguan (Tablet):</div>
+        <div id="totalMingguan" class="summary-value">0</div>
+      </div>
+      <div style="margin-top: 0.5rem; font-weight: bold; color: #c2185b;">
+        Capaian: <span id="capaianPercent">0%</span>
+      </div>
+      <svg class="progress-circle" viewBox="0 0 36 36">
+        <path
+          id="progressBar"
+          stroke="#c2185b"
+          stroke-width="3"
+          fill="none"
+          stroke-dasharray="0, 100"
+          stroke-linecap="round"
+          d="M18 2.0845
+             a 15.9155 15.9155 0 0 1 0 31.831
+             a 15.9155 15.9155 0 0 1 0 -31.831"
+        />
+      </svg>
+    </div>
+
+    <!-- Riwayat Konsumsi -->
+    <div class="riwayat-card">
+      <h3>Riwayat Konsumsi Tablet</h3>
+      <div id="riwayatList">
+        <!-- List riwayat muncul di sini -->
+      </div>
+    </div>
+
+    <!-- Info & Risiko -->
+    <div class="info-card">
+      <h3>Info dan Risiko Anemia</h3>
+      <ul>
+        <li>Anemia adalah kondisi kekurangan sel darah merah atau hemoglobin.</li>
+        <li>Minum tablet tambah darah membantu mencegah anemia, terutama pada siswi remaja.</li>
+        <li>Risiko anemia tinggi bisa menyebabkan kelelahan, konsentrasi menurun, dan masalah kesehatan lainnya.</li>
+        <li>Pastikan minum tablet sesuai dosis dan jadwal yang dianjurkan.</li>
+      </ul>
+    </div>
+
+    <!-- Tanya Jawab -->
+    <div class="tanya-card">
+      <h3>Tanya Jawab</h3>
+      <textarea id="pertanyaan" rows="3" placeholder="Ajukan pertanyaan tentang anemia atau tablet tambah darah..."></textarea>
+      <button id="btnTanya">Kirim Pertanyaan</button>
+      <div id="jawaban" style="margin-top:1rem; font-style: italic; color: #555;"></div>
+    </div>
+
+    <!-- Alarm -->
+    <div class="alarm-card">
+      <h3>Pengaturan Alarm Pengingat Minum Tablet</h3>
+      <label for="alarmTime">Waktu Alarm:</label>
+      <input type="time" id="alarmTime" />
+      <label for="alarmRepeat">Pengulangan:</label>
+      <select id="alarmRepeat">
+        <option value="daily">Harian</option>
+        <option value="weekdays">Hari Kerja (Sen-Jum)</option>
+        <option value="once">Sekali</option>
+      </select>
+      <button class="add-alarm-btn" id="btnTambahAlarm">Tambah Alarm</button>
+
+      <div class="alarm-list" id="alarmList"></div>
+
+      <button class="alarm-test-btn" id="btnTestAlarm">Test Alarm Sekarang</button>
+    </div>
+  </div>
+
+  <!-- Modal Edit Siswi (contoh jika mau edit) -->
+  <div id="editSiswiModal" style="display:none;">
+    <div class="modal-content">
+      <h3>Edit Data Siswi</h3>
+      <label for="editNama">Nama:</label>
+      <input type="text" id="editNama" />
+      <label for="editKelas">Kelas:</label>
+      <input type="text" id="editKelas" />
+      <label for="editJumlah">Jumlah Tablet:</label>
+      <input type="number" id="editJumlah" min="0" max="1" />
+      <label for="editTanggal">Tanggal:</label>
+      <input type="date" id="editTanggal" />
+      <button id="btnSimpanEdit">Simpan Perubahan</button>
+    </div>
+  </div>
+
+  <script>
+    // Data simulasi, biasanya diambil dari backend / localStorage
+    let konsumsiData = [];
+
+    // Elemen input
+    const tanggalInput = document.getElementById('tanggalInput');
+    const namaSiswiInput = document.getElementById('namaSiswi');
+    const kelasSiswiInput = document.getElementById('kelasSiswi');
+    const konsumsiTabletInput = document.getElementById('konsumsiTablet');
+    const btnSimpanKonsumsi = document.getElementById('btnSimpanKonsumsi');
+
+    const totalMingguanElem = document.getElementById('totalMingguan');
+    const capaianPercentElem = document.getElementById('capaianPercent');
+    const progressBar = document.getElementById('progressBar');
+    const riwayatList = document.getElementById('riwayatList');
+
+    const pertanyaanInput = document.getElementById('pertanyaan');
+    const btnTanya = document.getElementById('btnTanya');
+    const jawabanElem = document.getElementById('jawaban');
+
+    // Alarm
+    const alarmTimeInput = document.getElementById('alarmTime');
+    const alarmRepeatSelect = document.getElementById('alarmRepeat');
+    const btnTambahAlarm = document.getElementById('btnTambahAlarm');
+    const alarmListElem = document.getElementById('alarmList');
+    const btnTestAlarm = document.getElementById('btnTestAlarm');
+
+    let alarms = [];
+
+    // Set tanggal default ke hari ini
+    function setDefaultDate() {
+      const now = new Date();
+      const isoDate = now.toISOString().split('T')[0];
+      tanggalInput.value = isoDate;
+    }
+
+    setDefaultDate();
+
+    // Fungsi menambahkan konsumsi
+    btnSimpanKonsumsi.addEventListener('click', () => {
+      const tanggal = tanggalInput.value;
+      const nama = namaSiswiInput.value.trim();
+      const kelas = kelasSiswiInput.value.trim();
+      const jumlah = Number(konsumsiTabletInput.value);
+
+      if (!tanggal || !nama || !kelas || isNaN(jumlah) || jumlah < 0) {
+        alert('Mohon isi semua data dengan benar.');
+        return;
+      }
+
+      // Tambah data ke konsumsiData
+      konsumsiData.push({ tanggal, nama, kelas, jumlah });
+
+      // Clear input nama & kelas dan jumlah
+      namaSiswiInput.value = '';
+      kelasSiswiInput.value = '';
+      konsumsiTabletInput.value = 1;
+
+      updateRingkasan();
+      renderRiwayat();
+    });
+
+    // Fungsi filter data untuk minggu berjalan (7 hari terakhir)
+    function getDataMingguIni() {
+      const now = new Date();
+      const weekAgo = new Date(now);
+      weekAgo.setDate(now.getDate() - 6); // Termasuk hari ini = 7 hari
+
+      return konsumsiData.filter(item => {
+        const tgl = new Date(item.tanggal);
+        // Bandingkan tanggal tanpa jam
+        return tgl >= weekAgo && tgl <= now;
+      });
+    }
+
+    // Fungsi update ringkasan
+    function updateRingkasan() {
+      const dataMingguIni = getDataMingguIni();
+
+      // Total konsumsi tablet minggu ini
+      const totalMingguan = dataMingguIni.reduce((acc, item) => acc + item.jumlah, 0);
+      totalMingguanElem.textContent = totalMingguan;
+
+      // Hitung jumlah siswi unik di minggu ini
+      const namaUnik = [...new Set(dataMingguIni.map(item => item.nama))];
+
+      if (namaUnik.length === 0) {
+        capaianPercentElem.textContent = '0%';
+      } else {
+        // Siswi yang minimal minum 1 tablet di minggu ini
+        const siswiMinum = namaUnik.filter(nama => {
+          return dataMingguIni.some(d => d.nama === nama && d.jumlah > 0);
+        }).length;
+
+        const capaian = (siswiMinum / namaUnik.length) * 100;
+        capaianPercentElem.textContent = capaian.toFixed(1) + '%';
+      }
+
+      // Update progress bar stroke-dasharray
+      const maxTablet = 7; // Maksimal konsumsi tablet/minggu
+      const progressPercent = Math.min(totalMingguan / maxTablet, 1) * 100;
+      progressBar.setAttribute('stroke-dasharray', `${progressPercent}, 100`);
+    }
+
+    // Render riwayat konsumsi (tampilkan data terbaru paling atas)
+    function renderRiwayat() {
+      if (konsumsiData.length === 0) {
+        riwayatList.innerHTML = '<p>Tidak ada data konsumsi.</p>';
+        return;
+      }
+
+      // Urutkan berdasarkan tanggal terbaru dulu, jika sama berdasarkan nama
+      const dataSorted = [...konsumsiData].sort((a, b) => {
+        if (a.tanggal > b.tanggal) return -1;
+        if (a.tanggal < b.tanggal) return 1;
+        return a.nama.localeCompare(b.nama);
+      });
+
+      riwayatList.innerHTML = '';
+      dataSorted.forEach(item => {
+        const riwayatItem = document.createElement('div');
+        riwayatItem.className = 'riwayat-item';
+
+        // Thumbnail dummy: warna background dengan inisial nama
+        const inisial = item.nama.charAt(0).toUpperCase();
+        const thumb = document.createElement('div');
+        thumb.style.width = '64px';
+        thumb.style.height = '64px';
+        thumb.style.background = '#c2185b';
+        thumb.style.borderRadius = '8px';
+        thumb.style.color = 'white';
+        thumb.style.display = 'flex';
+        thumb.style.alignItems = 'center';
+        thumb.style.justifyContent = 'center';
+        thumb.style.fontSize = '2rem';
+        thumb.style.fontWeight = 'bold';
+        thumb.textContent = inisial;
+
+        const detail = document.createElement('div');
+        detail.className = 'riwayat-detail';
+
+        detail.innerHTML = `<strong>${item.nama} (Kelas ${item.kelas})</strong>
+                            Tanggal: ${item.tanggal}<br />
+                            Jumlah tablet diminum: ${item.jumlah}`;
+
+        riwayatItem.appendChild(thumb);
+        riwayatItem.appendChild(detail);
+
+        riwayatList.appendChild(riwayatItem);
+      });
+    }
+
+    // Tanya Jawab sederhana (dummy)
+    btnTanya.addEventListener('click', () => {
+      const question = pertanyaanInput.value.trim().toLowerCase();
+      if (!question) {
+        alert('Silakan masukkan pertanyaan terlebih dahulu.');
+        return;
+      }
+
+      // Jawaban sederhana berdasar kata kunci
+      let answer = "Maaf, saya belum bisa menjawab pertanyaan itu.";
+
+      if (question.includes('anemia')) {
+        answer = "Anemia adalah kondisi kekurangan hemoglobin dalam darah yang dapat menyebabkan kelelahan dan masalah kesehatan lainnya.";
+      } else if (question.includes('tablet tambah darah')) {
+        answer = "Tablet tambah darah mengandung zat besi yang membantu mencegah dan mengobati anemia pada siswi.";
+      } else if (question.includes('minum tablet')) {
+        answer = "Disarankan minum tablet tambah darah secara rutin sesuai anjuran guru atau tenaga kesehatan.";
+      }
+
+      jawabanElem.textContent = answer;
+      pertanyaanInput.value = '';
+    });
+
+    // Alarm pengingat minum tablet
+    btnTambahAlarm.addEventListener('click', () => {
+      const waktu = alarmTimeInput.value;
+      const repeat = alarmRepeatSelect.value;
+
+      if (!waktu) {
+        alert('Silakan pilih waktu alarm.');
+        return;
+      }
+
+      // Simpan alarm
+      alarms.push({ waktu, repeat, id: Date.now() });
+
+      renderAlarmList();
+    });
+
+    function renderAlarmList() {
+      if (alarms.length === 0) {
+        alarmListElem.innerHTML = '<p>Tidak ada alarm pengingat.</p>';
+        return;
+      }
+
+      alarmListElem.innerHTML = '';
+
+      alarms.forEach(alarm => {
+        const div = document.createElement('div');
+        div.className = 'alarm-list-item';
+        div.textContent = `Alarm pukul ${alarm.waktu} (${alarm.repeat}) `;
+
+        const btnDelete = document.createElement('button');
+        btnDelete.textContent = 'Hapus';
+        btnDelete.className = 'delete-alarm-btn';
+        btnDelete.addEventListener('click', () => {
+          alarms = alarms.filter(a => a.id !== alarm.id);
+          renderAlarmList();
+        });
+
+        div.appendChild(btnDelete);
+        alarmListElem.appendChild(div);
+      });
+    }
+
+    // Alarm test sound + notification
+    btnTestAlarm.addEventListener('click', () => {
+      // Bunyi beep sederhana
+      if ('Notification' in window && Notification.permission !== 'granted') {
+        Notification.requestPermission();
+      }
+
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('Alarm Minum Tablet', {
+          body: 'Saatnya minum tablet tambah darah!',
+          icon: 'https://cdn-icons-png.flaticon.com/512/1973/1973750.png'
+        });
+      }
+
+      // Beep suara via Web Audio API
+      const context = new AudioContext();
+      const oscillator = context.createOscillator();
+      oscillator.type = 'square';
+      oscillator.frequency.setValueAtTime(440, context.currentTime);
+      oscillator.connect(context.destination);
+      oscillator.start();
+      setTimeout(() => {
+        oscillator.stop();
+        context.close();
+      }, 800);
+    });
+
+    // Update ringkasan & riwayat saat halaman load
+    updateRingkasan();
+    renderRiwayat();
+    renderAlarmList();
+  </script>
+</body>
+</html>
 
