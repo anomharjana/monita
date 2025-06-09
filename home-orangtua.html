@@ -21,7 +21,7 @@
       color: #c2185b;
     }
 
-    .summary-card, .riwayat-card, .info-card, .tanya-card {
+    .summary-card, .riwayat-card, .info-card, .tanya-card, .alarm-card {
       background-color: white;
       border-radius: 16px;
       padding: 1.5rem;
@@ -174,6 +174,68 @@
     .alarm-test-btn:hover {
       background: #ad1457;
     }
+
+    /* Alarm add form */
+    .alarm-card label {
+      display: block;
+      margin-top: 0.75rem;
+      font-weight: bold;
+    }
+
+    .alarm-card input, .alarm-card select {
+      width: 100%;
+      padding: 0.4rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      margin-top: 0.3rem;
+    }
+
+    .alarm-card button.add-alarm-btn {
+      margin-top: 1rem;
+      background: #388e3c;
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 1rem;
+    }
+
+    .alarm-card button.add-alarm-btn:hover {
+      background: #2e7d32;
+    }
+
+    /* Daftar alarm */
+    .alarm-list {
+      margin-top: 1rem;
+    }
+
+    .alarm-list-item {
+      background: #fce4ec;
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .alarm-list-item button.delete-alarm-btn {
+      background: #d32f2f;
+      border: none;
+      color: white;
+      border-radius: 8px;
+      padding: 0.2rem 0.6rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background-color 0.3s;
+    }
+
+    .alarm-list-item button.delete-alarm-btn:hover {
+      background: #9a0007;
+    }
   </style>
 </head>
 <body>
@@ -220,6 +282,31 @@
       <button onclick="alert('Pertanyaan Anda telah dikirim.')">Kirim</button>
     </div>
 
+    <!-- Tambah fitur Alarm Dinamis -->
+    <h3>Pengingat Alarm Minum TTD</h3>
+    <div class="alarm-card">
+      <label for="alarmHari">Pilih Hari</label>
+      <select id="alarmHari">
+        <option value="0">Minggu</option>
+        <option value="1">Senin</option>
+        <option value="2">Selasa</option>
+        <option value="3">Rabu</option>
+        <option value="4">Kamis</option>
+        <option value="5">Jumat</option>
+        <option value="6">Sabtu</option>
+      </select>
+
+      <label for="alarmJam">Jam (0-23)</label>
+      <input type="number" id="alarmJam" min="0" max="23" value="9" />
+
+      <label for="alarmMenit">Menit (0-59)</label>
+      <input type="number" id="alarmMenit" min="0" max="59" value="0" />
+
+      <button class="add-alarm-btn" id="addAlarmBtn">Tambah Alarm</button>
+
+      <div class="alarm-list" id="alarmList"></div>
+    </div>
+
     <!-- Tombol untuk tes alarm manual -->
     <button class="alarm-test-btn" id="testAlarmBtn">🔔 Tes Alarm Manual</button>
   </div>
@@ -242,206 +329,309 @@
     </div>
   </div>
 
-  <audio id="alarmSound" src="https://www.soundjay.com/button/beep-07.mp3" preload="auto"></audio>
+  <audio id="alarmSound" src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" preload="auto"></audio>
 
   <script>
-    // --- Fungsi utama untuk manajemen data dan UI ---
-    function filterCurrentYear(data) {
-      const thisYear = new Date().getFullYear();
-      return data.filter(entry => {
-        const parts = entry.tanggal.split('/');
-        const year = parseInt(parts[2]);
-        return year === thisYear;
-      });
-    }
-
-    function calculateRingkasan(data) {
-      const yaCount = data.filter(d => d.jawaban === "Ya").length;
-      const total = Math.min(data.length, 52);
-      return { yaCount, total };
-    }
-
-    function getRiskStatus(ya, total) {
-      const percent = total === 0 ? 0 : (ya / total) * 100;
-      if (percent >= 75) return { label: "Risiko Rendah", class: "risk-rendah" };
-      if (percent >= 50) return { label: "Risiko Sedang", class: "risk-sedang" };
-      return { label: "Risiko Tinggi", class: "risk-tinggi" };
-    }
-
-    function updateRingkasanUI(ya, total) {
-      document.getElementById("summaryValue").textContent = `${ya}/${total}`;
-      const risk = getRiskStatus(ya, total);
-      const riskEl = document.getElementById("riskStatus");
-      riskEl.textContent = risk.label;
-      riskEl.className = `risk-status ${risk.class}`;
-      const percent = total > 0 ? (ya / total) * 100 : 0;
-      document.getElementById("progressBar").setAttribute("stroke-dasharray", `${percent},100`);
-    }
-
-    function renderRiwayat(data) {
-      const container = document.getElementById("riwayatContainer");
-      container.innerHTML = "";
-      const entries = data.slice(0, 52);
-
-      if (entries.length === 0) {
-        container.innerHTML = "<p>Tidak ada data riwayat tahun ini.</p>";
-        return;
+    // -----------------------
+    // Ambil data dummy riwayat minum TTD
+    const riwayatDummy = [
+      {
+        tanggal: '2024-06-01',
+        jam: '09:00',
+        status: 'Sudah Minum',
+        foto: 'https://via.placeholder.com/64?text=Minum1',
+        catatan: 'Minum dengan lancar'
+      },
+      {
+        tanggal: '2024-06-08',
+        jam: '09:10',
+        status: 'Belum Minum',
+        foto: 'https://via.placeholder.com/64?text=Minum2',
+        catatan: 'Anak agak mual'
+      },
+      {
+        tanggal: '2024-06-15',
+        jam: '09:05',
+        status: 'Sudah Minum',
+        foto: 'https://via.placeholder.com/64?text=Minum3',
+        catatan: 'Minum sambil makan'
       }
+    ];
 
-      entries.forEach(item => {
-        const card = document.createElement("div");
-        card.className = "riwayat-item";
-        if (item.foto) {
-          const img = document.createElement("img");
-          img.className = "riwayat-thumbnail";
-          img.src = item.foto;
-          card.appendChild(img);
-        }
-        const detail = document.createElement("div");
-        detail.className = "riwayat-detail";
-        detail.innerHTML = `<strong>${item.jawaban === "Ya" ? "✅ Ya" : "❌ Tidak"}</strong> ${item.tanggal}, ${item.waktu}`;
-        if (item.alasan) {
-          detail.innerHTML += `<br><em>Alasan:</em> ${item.alasan}`;
-        }
-        card.appendChild(detail);
-        container.appendChild(card);
+    // -----------------------
+    // Fungsi menampilkan riwayat minum TTD
+    function renderRiwayat() {
+      const container = document.getElementById('riwayatContainer');
+      container.innerHTML = '';
+      riwayatDummy.forEach(item => {
+        const el = document.createElement('div');
+        el.className = 'riwayat-item';
+        el.innerHTML = `
+          <img class="riwayat-thumbnail" src="${item.foto}" alt="Foto Minum TTD" />
+          <div class="riwayat-detail">
+            <strong>${item.tanggal} ${item.jam}</strong>
+            <span>Status: ${item.status}</span><br />
+            <small>${item.catatan}</small>
+          </div>
+        `;
+        container.appendChild(el);
       });
     }
 
-    function renderInfoAnak(data) {
-      const container = document.getElementById("infoAnak");
-      container.innerHTML = `
-        <p><strong>Nama:</strong> ${data.nama}</p>
-        <p><strong>Kelas:</strong> ${data.kelas}</p>
-        <p><strong>Status Anemia:</strong> ${data.statusAnemia}</p>
-        <p><strong>Keluhan Terakhir:</strong> ${data.keluhanTerakhir}</p>
-      `;
-    }
-
-    function showModal(show) {
-      document.getElementById("dataAnakModal").style.display = show ? "flex" : "none";
-    }
-
+    // -----------------------
+    // Simulasi data anak dari localStorage atau form modal input
     function loadDataAnak() {
-      const dataAnak = localStorage.getItem("dataAnak");
-      if (!dataAnak) {
-        // Tampilkan form modal input data anak
-        showModal(true);
+      const dataAnak = localStorage.getItem('dataAnak');
+      if (dataAnak) {
+        return JSON.parse(dataAnak);
       } else {
-        // Tampilkan data anak dari localStorage
-        renderInfoAnak(JSON.parse(dataAnak));
+        return null;
       }
     }
 
-    // Simpan data anak dari modal
-    document.getElementById("formDataAnak").addEventListener("submit", function(e) {
+    function saveDataAnak(data) {
+      localStorage.setItem('dataAnak', JSON.stringify(data));
+    }
+
+    function renderInfoAnak() {
+      const infoDiv = document.getElementById('infoAnak');
+      const data = loadDataAnak();
+      if (data) {
+        infoDiv.innerHTML = `
+          <p><strong>Nama:</strong> ${data.nama}</p>
+          <p><strong>Kelas:</strong> ${data.kelas}</p>
+          <p><strong>Status Anemia:</strong> ${data.statusAnemia}</p>
+          <p><strong>Keluhan Terakhir:</strong> ${data.keluhanTerakhir}</p>
+        `;
+      } else {
+        infoDiv.innerHTML = `<p>Data anak belum diisi.</p>`;
+        showModalDataAnak();
+      }
+    }
+
+    // -----------------------
+    // Modal input data anak
+    const modal = document.getElementById('dataAnakModal');
+    const formDataAnak = document.getElementById('formDataAnak');
+
+    function showModalDataAnak() {
+      modal.style.display = 'flex';
+    }
+
+    function hideModalDataAnak() {
+      modal.style.display = 'none';
+    }
+
+    formDataAnak.addEventListener('submit', e => {
       e.preventDefault();
-      const nama = document.getElementById("namaAnak").value.trim();
-      const kelas = document.getElementById("kelasAnak").value.trim();
-      const statusAnemia = document.getElementById("statusAnemia").value.trim();
-      const keluhanTerakhir = document.getElementById("keluhanTerakhir").value.trim();
+      const nama = document.getElementById('namaAnak').value.trim();
+      const kelas = document.getElementById('kelasAnak').value.trim();
+      const statusAnemia = document.getElementById('statusAnemia').value.trim();
+      const keluhanTerakhir = document.getElementById('keluhanTerakhir').value.trim();
 
       if (!nama || !kelas || !statusAnemia || !keluhanTerakhir) {
-        alert("Semua data harus diisi.");
+        alert('Semua kolom wajib diisi.');
         return;
       }
 
-      const anakData = { nama, kelas, statusAnemia, keluhanTerakhir };
-      localStorage.setItem("dataAnak", JSON.stringify(anakData));
-      showModal(false);
-      renderInfoAnak(anakData);
+      saveDataAnak({ nama, kelas, statusAnemia, keluhanTerakhir });
+      renderInfoAnak();
+      hideModalDataAnak();
     });
 
-    // Ambil data riwayat dari localStorage, filter tahun berjalan, update UI
-    function init() {
-      const riwayatRaw = localStorage.getItem("riwayatTTD");
-      const riwayat = riwayatRaw ? JSON.parse(riwayatRaw) : [];
-      const currentYearData = filterCurrentYear(riwayat);
-      const limitedData = currentYearData.slice(0, 52);
-      const { yaCount, total } = calculateRingkasan(limitedData);
-      updateRingkasanUI(yaCount, total);
-      renderRiwayat(limitedData);
-      loadDataAnak();
+    // -----------------------
+    // Kalkulasi total konsumsi mingguan dari riwayat dummy
+    function hitungKonsumsi() {
+      // Asumsikan data tiap tanggal unik satu kali konsumsi
+      const mingguIni = getMingguIniDates();
+      let konsumsi = 0;
+      riwayatDummy.forEach(item => {
+        if (mingguIni.includes(item.tanggal) && item.status.toLowerCase().includes('sudah')) {
+          konsumsi++;
+        }
+      });
+      return konsumsi;
     }
 
-    init();
-
-    // --- Fitur Pengingat Minum TTD setiap hari Senin jam 9 pagi ---
-    function setupWeeklyReminder() {
+    // Mendapatkan tanggal di minggu ini (Senin-Minggu)
+    function getMingguIniDates() {
       const now = new Date();
-      const day = now.getDay(); // Minggu=0 ... Senin=1 ...
-      const hour = now.getHours();
-      const minutes = now.getMinutes();
-
-      // Jika hari ini bukan Senin jam 9 pagi, set timeout ke Senin jam 9 pagi berikutnya
-      // Kalau sudah lewat jam 9 pagi Senin ini, set ke Senin depan
-      let daysUntilMonday = (1 - day + 7) % 7;
-      let targetDate = new Date(now);
-      targetDate.setHours(9, 0, 0, 0);
-      targetDate.setDate(now.getDate() + daysUntilMonday);
-
-      if (now > targetDate) {
-        // Sudah lewat jam 9 pagi Senin ini, ke Senin depan
-        targetDate.setDate(targetDate.getDate() + 7);
+      const hariIni = now.getDay(); // 0=minggu..6=sabtu
+      // Hari Senin minggu ini
+      const selisihSenin = (hariIni + 6) % 7; 
+      const senin = new Date(now);
+      senin.setDate(now.getDate() - selisihSenin);
+      let dates = [];
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(senin);
+        d.setDate(senin.getDate() + i);
+        dates.push(d.toISOString().slice(0,10));
       }
-
-      const timeoutMs = targetDate - now;
-
-      setTimeout(() => {
-        triggerReminder();
-        // Setelah sekali trigger, set interval mingguan tiap 7 hari
-        setInterval(triggerReminder, 7 * 24 * 60 * 60 * 1000);
-      }, timeoutMs);
+      return dates;
     }
 
-    function triggerReminder() {
-      if (Notification.permission === "granted") {
-        new Notification("Pengingat Minum TTD", {
-          body: "Ingat! Hari ini Senin, saatnya anak minum tablet TTD.",
-          icon: "https://cdn-icons-png.flaticon.com/512/2885/2885431.png"
-        });
+    // Update ringkasan konsumsi mingguan dan risiko
+    function updateSummary() {
+      const totalKonsumsi = hitungKonsumsi();
+      const targetMingguan = 1; // Asumsikan target minum 1x/minggu
+      const summaryValue = document.getElementById('summaryValue');
+      const riskStatus = document.getElementById('riskStatus');
+      const progressBar = document.getElementById('progressBar');
+
+      summaryValue.textContent = `${totalKonsumsi}/${targetMingguan}`;
+
+      // Hitung persen progres
+      let persen = Math.min(100, (totalKonsumsi / targetMingguan) * 100);
+      // Stroke dasharray trick untuk circle progress
+      progressBar.setAttribute('stroke-dasharray', `${persen}, 100`);
+
+      // Status risiko
+      let statusText = '';
+      let className = '';
+      if (totalKonsumsi >= targetMingguan) {
+        statusText = 'Risiko Rendah';
+        className = 'risk-rendah';
+      } else if (totalKonsumsi > 0) {
+        statusText = 'Risiko Sedang';
+        className = 'risk-sedang';
       } else {
-        Notification.requestPermission().then(permission => {
-          if (permission === "granted") {
-            triggerReminder();
-          }
+        statusText = 'Risiko Tinggi';
+        className = 'risk-tinggi';
+      }
+      riskStatus.textContent = statusText;
+      riskStatus.className = `risk-status ${className}`;
+    }
+
+    // -----------------------
+    // Alarm Pengingat TTD dinamis
+
+    // Ambil alarm dari localStorage
+    function loadAlarms() {
+      const alarms = localStorage.getItem('alarms');
+      if (alarms) {
+        return JSON.parse(alarms);
+      }
+      return [];
+    }
+
+    // Simpan alarm ke localStorage
+    function saveAlarms(alarms) {
+      localStorage.setItem('alarms', JSON.stringify(alarms));
+    }
+
+    // Render daftar alarm di UI
+    function renderAlarmList() {
+      const alarmListDiv = document.getElementById('alarmList');
+      const alarms = loadAlarms();
+      if (alarms.length === 0) {
+        alarmListDiv.innerHTML = '<p>Belum ada alarm.</p>';
+        return;
+      }
+      alarmListDiv.innerHTML = '';
+      alarms.forEach((alarm, index) => {
+        const hariNama = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][alarm.hari];
+        const jam = String(alarm.jam).padStart(2,'0');
+        const menit = String(alarm.menit).padStart(2,'0');
+
+        const div = document.createElement('div');
+        div.className = 'alarm-list-item';
+        div.innerHTML = `
+          <span>${hariNama}, ${jam}:${menit}</span>
+          <button class="delete-alarm-btn" data-index="${index}">Hapus</button>
+        `;
+        alarmListDiv.appendChild(div);
+      });
+
+      // Tambah event handler tombol hapus alarm
+      const btns = alarmListDiv.querySelectorAll('.delete-alarm-btn');
+      btns.forEach(btn => {
+        btn.addEventListener('click', e => {
+          const idx = Number(e.target.dataset.index);
+          deleteAlarm(idx);
         });
+      });
+    }
+
+    function deleteAlarm(index) {
+      const alarms = loadAlarms();
+      if (index >= 0 && index < alarms.length) {
+        alarms.splice(index, 1);
+        saveAlarms(alarms);
+        renderAlarmList();
       }
     }
 
-    setupWeeklyReminder();
+    // Tambah alarm baru
+    document.getElementById('addAlarmBtn').addEventListener('click', () => {
+      const hari = Number(document.getElementById('alarmHari').value);
+      const jam = Number(document.getElementById('alarmJam').value);
+      const menit = Number(document.getElementById('alarmMenit').value);
 
-    // --- Tombol Tes Alarm Manual dengan suara dan notifikasi berulang ---
-    const alarmSound = document.getElementById("alarmSound");
-    const testAlarmBtn = document.getElementById("testAlarmBtn");
-
-    testAlarmBtn.addEventListener("click", async () => {
-      if (Notification.permission !== "granted") {
-        await Notification.requestPermission();
+      if (
+        isNaN(hari) || hari < 0 || hari > 6 ||
+        isNaN(jam) || jam < 0 || jam > 23 ||
+        isNaN(menit) || menit < 0 || menit > 59
+      ) {
+        alert('Mohon masukkan waktu alarm yang valid.');
+        return;
       }
 
-      if (Notification.permission === "granted") {
-        new Notification("Tes Alarm", {
-          body: "Ini adalah tes alarm suara dan notifikasi.",
-          icon: "https://cdn-icons-png.flaticon.com/512/2885/2885431.png"
-        });
-
-        let count = 0;
-        const intervalId = setInterval(() => {
-          alarmSound.pause();
-          alarmSound.currentTime = 0;
-          alarmSound.play().catch(e => console.warn("Audio play error:", e));
-
-          count++;
-          if (count >= 6) clearInterval(intervalId);
-        }, 10000);
-
-        // Mainkan satu kali segera
-        alarmSound.play().catch(e => console.warn("Audio play error:", e));
-      } else {
-        alert("Izin notifikasi ditolak, tidak bisa menampilkan alarm.");
+      const alarms = loadAlarms();
+      // Cek duplikat alarm
+      const adaDuplikat = alarms.some(a => a.hari === hari && a.jam === jam && a.menit === menit);
+      if (adaDuplikat) {
+        alert('Alarm dengan waktu ini sudah ada.');
+        return;
       }
+
+      alarms.push({ hari, jam, menit });
+      saveAlarms(alarms);
+      renderAlarmList();
+      alert('Alarm berhasil ditambahkan.');
     });
+
+    // -----------------------
+    // Fungsi cek alarm dan trigger bunyi notifikasi
+    function cekAlarm() {
+      const now = new Date();
+      const hariIni = now.getDay();
+      const jamIni = now.getHours();
+      const menitIni = now.getMinutes();
+
+      const alarms = loadAlarms();
+
+      alarms.forEach(alarm => {
+        if (alarm.hari === hariIni && alarm.jam === jamIni && alarm.menit === menitIni) {
+          bunyikanAlarm();
+        }
+      });
+    }
+
+    // Bunyi alarm
+    function bunyikanAlarm() {
+      const audio = document.getElementById('alarmSound');
+      if (audio) {
+        audio.play();
+        alert('⏰ Waktunya minum TTD anak!');
+      }
+    }
+
+    // Tombol tes alarm manual
+    document.getElementById('testAlarmBtn').addEventListener('click', () => {
+      bunyikanAlarm();
+    });
+
+    // Jalankan cek alarm setiap menit
+    setInterval(cekAlarm, 60 * 1000);
+
+    // -----------------------
+    // Inisialisasi halaman
+    window.onload = () => {
+      renderRiwayat();
+      renderInfoAnak();
+      updateSummary();
+      renderAlarmList();
+    };
   </script>
 </body>
 </html>
