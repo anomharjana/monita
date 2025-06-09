@@ -180,7 +180,6 @@
         <div><label>Nama:</label> ${profile.nama}</div>
         <div><label>Email:</label> ${profile.email}</div>
         <div><label>Usia:</label> ${age} tahun</div>
-        <div><label>Pekerjaan:</label> ${profile.pekerjaan}</div>
         <div><label>Skor Minum TTD:</label> ${score}</div>
       `;
     }
@@ -190,7 +189,6 @@
       let tanggalLahir = existing?.tanggalLahir || "";
       let nomorHP = existing?.nomorHP || "";
       let email = existing?.email || "";
-      let pekerjaan = existing?.pekerjaan || "";
 
       do {
         nama = prompt("Masukkan Nama Anda:", nama);
@@ -220,14 +218,11 @@
         }
       } while (!email);
 
-      pekerjaan = prompt("Masukkan Pekerjaan Anda:", pekerjaan || "") || pekerjaan;
-
       return {
         nama: nama.trim(),
         tanggalLahir: tanggalLahir.trim(),
         nomorHP: nomorHP.trim(),
         email: email.trim(),
-        pekerjaan: pekerjaan.trim(),
         riwayatTTD: existing?.riwayatTTD || [],
       };
     }
@@ -297,22 +292,17 @@
       ctx.fillText(age + " tahun", 120, 140);
 
       ctx.font = "bold 16px Segoe UI, sans-serif";
-      ctx.fillText("Pekerjaan:", 20, 170);
+      ctx.fillText("Skor Minum TTD:", 20, 170);
       ctx.font = "16px Segoe UI, sans-serif";
-      ctx.fillText(profile.pekerjaan, 120, 170);
+      ctx.fillText(score, 170, 170);
 
       ctx.font = "bold 16px Segoe UI, sans-serif";
-      ctx.fillText("Skor Minum TTD:", 20, 200);
+      ctx.fillText("Risiko TTD:", 20, 200);
       ctx.font = "16px Segoe UI, sans-serif";
-      ctx.fillText(score, 170, 200);
-
-      ctx.font = "bold 16px Segoe UI, sans-serif";
-      ctx.fillText("Risiko TTD:", 20, 230);
-      ctx.font = "16px Segoe UI, sans-serif";
-      ctx.fillText(risiko, 120, 230);
+      ctx.fillText(risiko, 120, 200);
 
       const qrData = {
-        profil: { nama: profile.nama, email: profile.email, usia: age, pekerjaan: profile.pekerjaan, skor: score, risiko: risiko },
+        profil: { nama: profile.nama, email: profile.email, usia: age, skor: score, risiko: risiko },
         riwayatTTD: profile.riwayatTTD
       };
 
