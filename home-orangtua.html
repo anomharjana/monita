@@ -13,594 +13,99 @@
     }
 
     .container {
-      max-width: 720px;
+      max-width: 1000px;
       margin: auto;
     }
 
-    h2, h3 {
+    iframe {
+      border: none;
+      width: 100%;
+      height: 80vh;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
       color: #c2185b;
-    }
-
-    .summary-card, .riwayat-card, .info-card, .tanya-card, .alarm-card {
-      background-color: white;
-      border-radius: 16px;
-      padding: 1.5rem;
-      box-shadow: 0 4px 12px rgba(240, 98, 146, 0.15);
-      margin-bottom: 2rem;
-    }
-
-    .summary-title {
-      font-size: 1.3rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .summary-value {
-      font-size: 2rem;
-      font-weight: bold;
-    }
-
-    .risk-status {
-      font-weight: bold;
-      margin-top: 0.5rem;
-    }
-
-    .risk-rendah { color: green; }
-    .risk-sedang { color: orange; }
-    .risk-tinggi { color: red; }
-
-    .progress-circle {
-      width: 100px;
-      height: 100px;
-    }
-
-    .riwayat-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 1rem;
+      text-align: center;
       margin-bottom: 1rem;
     }
 
-    .riwayat-thumbnail {
-      width: 64px;
-      height: 64px;
-      object-fit: cover;
-      border-radius: 8px;
-    }
-
-    .riwayat-detail {
-      flex: 1;
-    }
-
-    .riwayat-detail strong {
-      display: block;
-      margin-bottom: 0.25rem;
-    }
-
-    .info-card ul {
-      padding-left: 1.2rem;
-    }
-
-    .info-card li {
-      margin-bottom: 0.5rem;
-    }
-
-    .tanya-card textarea {
-      width: 100%;
-      border: 1px solid #ccc;
-      padding: 0.5rem;
-      border-radius: 8px;
-      resize: vertical;
-    }
-
-    .tanya-card button {
-      margin-top: 0.75rem;
-      background: #d81b60;
-      color: white;
-      border: none;
-      padding: 0.6rem 1.2rem;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    .tanya-card button:hover {
-      background: #ad1457;
-    }
-
-    /* Pop-up form styles */
-    #dataAnakModal {
+    /* Pop-up styles */
+    .popup {
       position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       background: rgba(0,0,0,0.5);
       display: flex;
-      justify-content: center;
       align-items: center;
-      z-index: 1000;
+      justify-content: center;
+      z-index: 999;
     }
 
-    #dataAnakModal .modal-content {
-      background: white;
+    .popup-content {
+      background: #fff;
       padding: 2rem;
       border-radius: 12px;
-      width: 90%;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
       max-width: 400px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      text-align: center;
     }
 
-    #dataAnakModal label {
-      display: block;
-      margin-bottom: 0.25rem;
-      font-weight: bold;
-    }
-
-    #dataAnakModal input {
-      width: 100%;
-      padding: 0.4rem;
+    .popup-content h3 {
+      color: #c2185b;
       margin-bottom: 1rem;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 1rem;
     }
 
-    #dataAnakModal button {
-      background: #d81b60;
-      color: white;
+    .popup-content p {
+      margin-bottom: 1.5rem;
+      font-size: 1rem;
+      color: #444;
+    }
+
+    .popup-content button {
+      padding: 0.5rem 1.2rem;
+      background: #c2185b;
+      color: #fff;
       border: none;
-      padding: 0.6rem 1.2rem;
       border-radius: 8px;
       cursor: pointer;
-      font-size: 1rem;
-      width: 100%;
     }
 
-    #dataAnakModal button:hover {
-      background: #ad1457;
-    }
-
-    /* Alarm test button styling */
-    .alarm-test-btn {
-      display: inline-block;
-      margin-top: 1rem;
-      background: #d81b60;
-      color: white;
-      border: none;
-      padding: 0.8rem 1.4rem;
-      border-radius: 8px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background-color 0.3s;
-      user-select: none;
-    }
-
-    .alarm-test-btn:hover {
-      background: #ad1457;
-    }
-
-    /* Alarm add form */
-    .alarm-card label {
-      display: block;
-      margin-top: 0.75rem;
-      font-weight: bold;
-    }
-
-    .alarm-card input, .alarm-card select {
-      width: 100%;
-      padding: 0.4rem;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 1rem;
-      margin-top: 0.3rem;
-    }
-
-    .alarm-card button.add-alarm-btn {
-      margin-top: 1rem;
-      background: #388e3c;
-      color: white;
-      border: none;
-      padding: 0.6rem 1.2rem;
-      border-radius: 8px;
-      cursor: pointer;
-      width: 100%;
-      font-size: 1rem;
-    }
-
-    .alarm-card button.add-alarm-btn:hover {
-      background: #2e7d32;
-    }
-
-    /* Daftar alarm */
-    .alarm-list {
-      margin-top: 1rem;
-    }
-
-    .alarm-list-item {
-      background: #fce4ec;
-      border-radius: 8px;
-      padding: 0.5rem 1rem;
-      margin-bottom: 0.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .alarm-list-item button.delete-alarm-btn {
-      background: #d32f2f;
-      border: none;
-      color: white;
-      border-radius: 8px;
-      padding: 0.2rem 0.6rem;
-      cursor: pointer;
-      font-size: 0.9rem;
-      transition: background-color 0.3s;
-    }
-
-    .alarm-list-item button.delete-alarm-btn:hover {
-      background: #9a0007;
+    .popup-content button:hover {
+      background: #a3154b;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Pantauan Konsumsi TTD Anak</h2>
-
-    <div class="summary-card">
-      <div>
-        <div class="summary-title">Total Konsumsi Mingguan:</div>
-        <div id="summaryValue" class="summary-value">0/0</div>
-        <div id="riskStatus" class="risk-status"></div>
-      </div>
-      <svg class="progress-circle" viewBox="0 0 36 36">
-        <path fill="none" stroke="#eee" stroke-width="4"
-              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831
-              a 15.9155 15.9155 0 0 1 0 -31.831" />
-        <path id="progressBar" fill="none" stroke="#d81b60" stroke-width="4" stroke-dasharray="0,100"
-              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831
-              a 15.9155 15.9155 0 0 1 0 -31.831" />
-      </svg>
-    </div>
-
-    <h3>Riwayat Minum TTD</h3>
-    <div id="riwayatContainer" class="riwayat-card"></div>
-
-    <h3>Edukasi Penting untuk Orang Tua</h3>
-    <div class="info-card">
-      <ul>
-        <li><strong>TTD</strong> penting untuk mencegah anemia dan meningkatkan konsentrasi belajar anak.</li>
-        <li>Berikan makanan kaya zat besi seperti daging, hati ayam, dan sayuran hijau.</li>
-        <li>Minum TTD seminggu sekali cukup, tetapi harus rutin.</li>
-        <li>Jika anak mual, pastikan tablet diminum setelah makan dan cukup air putih.</li>
-      </ul>
-    </div>
-
-    <h3>Informasi Kesehatan Anak</h3>
-    <div id="infoAnak" class="info-card"></div>
-
-    <h3>Tanya Petugas atau Guru</h3>
-    <div class="tanya-card">
-      <label for="pertanyaan">Tulis pertanyaan atau saran Anda:</label><br>
-      <textarea id="pertanyaan" rows="3" placeholder="Contoh: Apakah anak saya perlu cek darah?"></textarea><br>
-      <button id="kirimPertanyaanBtn">Kirim</button>
-    </div>
-
-    <button id="editDataAnakBtn" style="background:#c2185b;color:#fff;border:none;padding:0.6rem 1.2rem;border-radius:8px;cursor:pointer;margin-top:2rem;">
-      ✏️ Edit Data Anak
-    </button>
-
-    <div class="alarm-card">
-      <h3>Pengingat Minum TTD</h3>
-
-      <label for="alarmHari">Pilih Hari:</label>
-      <select id="alarmHari">
-        <option value="Senin">Senin</option>
-        <option value="Selasa">Selasa</option>
-        <option value="Rabu">Rabu</option>
-        <option value="Kamis">Kamis</option>
-        <option value="Jumat">Jumat</option>
-        <option value="Sabtu">Sabtu</option>
-        <option value="Minggu">Minggu</option>
-      </select>
-
-      <label for="alarmJam">Jam (24-jam):</label>
-      <input type="time" id="alarmJam" />
-
-      <button class="add-alarm-btn">Tambah Pengingat</button>
-
-      <div class="alarm-list" id="alarmList"></div>
-
-      <button class="alarm-test-btn" id="testAlarmBtn">▶️ Tes Alarm</button>
+  <div class="popup" id="infoPopup">
+    <div class="popup-content">
+      <h3>Petunjuk Penggunaan</h3>
+      <p>Silakan masukkan <strong>nama siswa dengan huruf kapital</strong> dan pilih rentang tanggal untuk menampilkan data.</p>
+      <button onclick="closePopup()">Mengerti</button>
     </div>
   </div>
 
-  <!-- Modal Data Anak -->
-  <div id="dataAnakModal" style="display:none;">
-    <div class="modal-content">
-      <h3>Data Anak</h3>
-      <form id="formDataAnak">
-        <label for="namaAnak">Nama Anak:</label>
-        <input type="text" id="namaAnak" required />
-        <label for="kelasAnak">Kelas:</label>
-        <input type="text" id="kelasAnak" required />
-        <label for="statusAnemia">Status Anemia:</label>
-        <input type="text" id="statusAnemia" placeholder="Misal: Tidak, Sedang, Berat" required />
-        <label for="keluhanTerakhir">Keluhan Terakhir:</label>
-        <input type="text" id="keluhanTerakhir" placeholder="Misal: Pusing, lemas" required />
-        <button type="submit">Simpan</button>
-      </form>
-    </div>
+  <div class="container">
+    <h2>Dashboard Pantauan TTD Anak</h2>
+    <iframe 
+      src="https://lookerstudio.google.com/embed/reporting/307abbbd-329a-45f6-a398-749594a3c407/page/EFxPF" 
+      allowfullscreen
+      sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox">
+    </iframe>
   </div>
 
   <script>
-    // ==== Data contoh riwayat ====
-    const riwayatMinum = [
-      {
-        tanggal: "2025-06-05",
-        konsumsiTablet: 1,
-        konsumsiSirup: 0,
-        foto: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
-      },
-      {
-        tanggal: "2025-06-12",
-        konsumsiTablet: 0,
-        konsumsiSirup: 1,
-        foto: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
-      },
-      {
-        tanggal: "2025-06-19",
-        konsumsiTablet: 1,
-        konsumsiSirup: 0,
-        foto: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
-      },
-    ];
-
-    // ==== Fungsi render riwayat minum TTD ====
-    function renderRiwayat() {
-      const container = document.getElementById("riwayatContainer");
-      container.innerHTML = "";
-      if (riwayatMinum.length === 0) {
-        container.innerHTML = "<i>Belum ada data riwayat minum TTD.</i>";
-        return;
-      }
-      riwayatMinum.forEach((item) => {
-        const elem = document.createElement("div");
-        elem.className = "riwayat-item";
-        elem.innerHTML = `
-          <img src="${item.foto}" alt="Foto Anak" class="riwayat-thumbnail" />
-          <div class="riwayat-detail">
-            <strong>Tanggal:</strong> ${item.tanggal}<br />
-            <strong>Tablet TTD:</strong> ${item.konsumsiTablet}<br />
-            <strong>Sirup TTD:</strong> ${item.konsumsiSirup}
-          </div>
-        `;
-        container.appendChild(elem);
-      });
+    function closePopup() {
+      document.getElementById('infoPopup').style.display = 'none';
     }
 
-    // ==== Penyimpanan dan pengambilan data anak ====
-
-    function saveDataAnak(data) {
-      localStorage.setItem("dataAnak", JSON.stringify(data));
-    }
-
-    function loadDataAnak() {
-      const data = localStorage.getItem("dataAnak");
-      if (!data) return null;
-      try {
-        return JSON.parse(data);
-      } catch {
-        return null;
-      }
-    }
-
-    // ==== Render info anak ke div infoAnak ====
-    function renderInfoAnak() {
-      const container = document.getElementById("infoAnak");
-      const data = loadDataAnak();
-      if (!data) {
-        container.innerHTML = "<i>Data anak belum diisi. Silakan klik tombol 'Edit Data Anak'.</i>";
-        return;
-      }
-      container.innerHTML = `
-        <ul>
-          <li><strong>Nama Anak:</strong> ${data.nama}</li>
-          <li><strong>Kelas:</strong> ${data.kelas}</li>
-          <li><strong>Status Anemia:</strong> ${data.statusAnemia}</li>
-          <li><strong>Keluhan Terakhir:</strong> ${data.keluhanTerakhir}</li>
-        </ul>
-      `;
-    }
-
-    // ==== Modal data anak ====
-    const modal = document.getElementById("dataAnakModal");
-    const formDataAnak = document.getElementById("formDataAnak");
-
-    function showModalDataAnak() {
-      modal.style.display = "flex";
-    }
-    function hideModalDataAnak() {
-      modal.style.display = "none";
-    }
-
-    // Jika klik luar modal-content, tutup modal
-    modal.addEventListener("click", (ev) => {
-      if (ev.target === modal) hideModalDataAnak();
-    });
-
-    // Submit form data anak
-    formDataAnak.addEventListener("submit", (ev) => {
-      ev.preventDefault();
-      const data = {
-        nama: formDataAnak.namaAnak.value.trim(),
-        kelas: formDataAnak.kelasAnak.value.trim(),
-        statusAnemia: formDataAnak.statusAnemia.value.trim(),
-        keluhanTerakhir: formDataAnak.keluhanTerakhir.value.trim(),
-      };
-      saveDataAnak(data);
-      renderInfoAnak();
-      hideModalDataAnak();
-      alert("Data anak berhasil disimpan!");
-    });
-
-    // Tombol edit data anak
-    const editBtn = document.getElementById("editDataAnakBtn");
-    editBtn.addEventListener("click", () => {
-      const data = loadDataAnak();
-      if (data) {
-        formDataAnak.namaAnak.value = data.nama;
-        formDataAnak.kelasAnak.value = data.kelas;
-        formDataAnak.statusAnemia.value = data.statusAnemia;
-        formDataAnak.keluhanTerakhir.value = data.keluhanTerakhir;
-      } else {
-        formDataAnak.reset();
-      }
-      showModalDataAnak();
-    });
-
-    // ==== Summary dan status risiko berdasarkan konsumsi ====
-
-    // Contoh target mingguan: 3 tablet per minggu
-    const targetMingguan = 3;
-
-    function updateSummary() {
-      // Total konsumsi tablet dan sirup dari riwayat (bisa diganti sumber data lain)
-      let totalTablet = 0;
-      let totalSirup = 0;
-      riwayatMinum.forEach((item) => {
-        totalTablet += item.konsumsiTablet;
-        totalSirup += item.konsumsiSirup;
-      });
-      const totalKonsumsi = totalTablet + totalSirup;
-      const summaryValue = document.getElementById("summaryValue");
-      summaryValue.textContent = `${totalKonsumsi} / ${targetMingguan}`;
-
-      // Risk status: rendah, sedang, tinggi
-      const riskStatus = document.getElementById("riskStatus");
-      let statusText = "";
-      let classRisk = "";
-      if (totalKonsumsi >= targetMingguan) {
-        statusText = "Rendah (Cukup TTD)";
-        classRisk = "risk-rendah";
-      } else if (totalKonsumsi >= targetMingguan / 2) {
-        statusText = "Sedang (Perlu tingkatkan)";
-        classRisk = "risk-sedang";
-      } else {
-        statusText = "Tinggi (Risiko anemia meningkat)";
-        classRisk = "risk-tinggi";
-      }
-      riskStatus.textContent = statusText;
-      riskStatus.className = `risk-status ${classRisk}`;
-
-      // Update progress bar
-      const progressBar = document.getElementById("progressBar");
-      let persen = Math.min(100, (totalKonsumsi / targetMingguan) * 100);
-      const circleCircumference = 100;
-      let dash = (persen / 100) * circleCircumference;
-      progressBar.setAttribute("stroke-dasharray", `${dash.toFixed(1)}, ${circleCircumference}`);
-    }
-
-    // ==== Kirim pertanyaan ====
-    const btnKirimPertanyaan = document.getElementById("kirimPertanyaanBtn");
-    btnKirimPertanyaan.addEventListener("click", () => {
-      const pertanyaan = document.getElementById("pertanyaan").value.trim();
-      if (!pertanyaan) {
-        alert("Silakan isi pertanyaan terlebih dahulu.");
-        return;
-      }
-      // Simulasi kirim ke petugas/guru (bisa ganti API/Backend sebenarnya)
-      alert("Pertanyaan terkirim: " + pertanyaan);
-      document.getElementById("pertanyaan").value = "";
-    });
-
-    // ==== Alarm Pengingat ====
-
-    // Data alarm disimpan di localStorage, struktur array objek {hari, jam}
-    const alarmListKey = "alarmTTDList";
-
-    function loadAlarmList() {
-      const data = localStorage.getItem(alarmListKey);
-      if (!data) return [];
-      try {
-        return JSON.parse(data);
-      } catch {
-        return [];
-      }
-    }
-    function saveAlarmList(list) {
-      localStorage.setItem(alarmListKey, JSON.stringify(list));
-    }
-
-    const alarmListContainer = document.getElementById("alarmList");
-    function renderAlarmList() {
-      const alarms = loadAlarmList();
-      alarmListContainer.innerHTML = "";
-      if (alarms.length === 0) {
-        alarmListContainer.innerHTML = "<i>Belum ada pengingat.</i>";
-        return;
-      }
-      alarms.forEach((alarm, idx) => {
-        const div = document.createElement("div");
-        div.className = "alarm-list-item";
-        div.innerHTML = `
-          <div>Hari: <strong>${alarm.hari}</strong>, Jam: <strong>${alarm.jam}</strong></div>
-          <button class="delete-alarm-btn" data-index="${idx}">Hapus</button>
-        `;
-        alarmListContainer.appendChild(div);
-      });
-      // Tambah event delete button
-      const btns = alarmListContainer.querySelectorAll(".delete-alarm-btn");
-      btns.forEach((btn) => {
-        btn.addEventListener("click", () => {
-          let idx = parseInt(btn.getAttribute("data-index"));
-          let alarms = loadAlarmList();
-          alarms.splice(idx, 1);
-          saveAlarmList(alarms);
-          renderAlarmList();
-        });
-      });
-    }
-
-    // Tambah alarm baru
-    document.querySelector(".add-alarm-btn").addEventListener("click", () => {
-      const hari = document.getElementById("alarmHari").value;
-      const jam = document.getElementById("alarmJam").value;
-      if (!jam) {
-        alert("Silakan pilih jam pengingat.");
-        return;
-      }
-      let alarms = loadAlarmList();
-      alarms.push({ hari, jam });
-      saveAlarmList(alarms);
-      renderAlarmList();
-      alert("Pengingat berhasil ditambahkan.");
-    });
-
-    // Tes alarm dengan suara sederhana dan alert
-    const testAlarmBtn = document.getElementById("testAlarmBtn");
-    testAlarmBtn.addEventListener("click", () => {
-      alert("Tes alarm: Ingatkan anak minum TTD!");
-      // Suara bip pendek pakai Web Audio API
-      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const oscillator = audioCtx.createOscillator();
-      oscillator.type = "square";
-      oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // Frekuensi 880 Hz
-      oscillator.connect(audioCtx.destination);
-      oscillator.start();
-      setTimeout(() => {
-        oscillator.stop();
-        audioCtx.close();
-      }, 500);
-    });
-
-    // ==== Inisialisasi saat halaman load ====
-
-    // Jika belum ada data anak, tampilkan modal input data anak otomatis
-    window.addEventListener("load", () => {
-      if (!loadDataAnak()) {
-        showModalDataAnak();
-      }
-      renderRiwayat();
-      renderInfoAnak();
-      updateSummary();
-      renderAlarmList();
-    });
+    // Auto show popup on load
+    window.onload = function() {
+      document.getElementById('infoPopup').style.display = 'flex';
+    };
   </script>
 </body>
 </html>
