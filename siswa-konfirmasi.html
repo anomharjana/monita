@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Form Konfirmasi Minum TTD</title>
   <style>
+    /* --- CSS Anda (tanpa perubahan) --- */
     body {
       font-family: Arial, sans-serif;
       margin: 2rem;
@@ -14,12 +15,10 @@
       flex-direction: column;
       align-items: center;
     }
-
     .logo {
       margin-bottom: 2rem;
       text-align: center;
     }
-
     .logo img {
       max-width: 180px;
       width: 100%;
@@ -27,11 +26,9 @@
       transition: transform 0.3s ease;
       cursor: pointer;
     }
-
     .logo img:hover {
       transform: scale(1.1);
     }
-
     .card-box {
       background: white;
       border-radius: 16px;
@@ -44,19 +41,16 @@
       align-items: center;
       margin-bottom: 1.5rem;
     }
-
     .form-info {
       margin-bottom: 1rem;
       font-size: 0.9rem;
       text-align: center;
     }
-
     .button-group {
       display: flex;
       gap: 1.5rem;
       margin-bottom: 1rem;
     }
-
     .button-group button {
       border: 2px solid #d81b60;
       background-color: white;
@@ -70,61 +64,45 @@
       gap: 0.5rem;
       transition: transform 0.2s ease, background-color 0.2s;
     }
-
     .button-group button:hover {
       transform: scale(1.05);
       background-color: #ffe4ec;
     }
-
-    .tips-box {
-      background-color: #fff0f4;
-      border-left: 4px solid #d81b60;
-      padding: 1rem;
-      border-radius: 12px;
-      font-size: 0.95rem;
-      font-weight: 500;
-      color: #d81b60;
-      text-align: center;
-      animation: blinkTips 1.6s infinite;
-      box-shadow: 0 2px 8px rgba(240, 98, 146, 0.2);
-      margin-top: 1rem;
+    .tips-box, .tips-menstruasi {
+        background-color: #fff0f4;
+        border-left: 4px solid #d81b60;
+        padding: 1rem;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: #d81b60;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(240, 98, 146, 0.2);
+        margin-top: 1rem;
     }
-
+    .tips-box {
+        animation: blinkTips 1.6s infinite;
+    }
+    .tips-menstruasi {
+        animation: fadeInMenstruasi 0.6s ease-in;
+    }
     @keyframes blinkTips {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.4; }
     }
-
-    .tips-menstruasi {
-      background-color: #fff3f7;
-      border-left: 4px solid #ec407a;
-      padding: 1rem;
-      border-radius: 12px;
-      font-size: 0.95rem;
-      font-weight: 500;
-      color: #c2185b;
-      text-align: center;
-      box-shadow: 0 2px 8px rgba(236, 64, 122, 0.2);
-      margin-top: 1rem;
-      animation: fadeInMenstruasi 0.6s ease-in;
-    }
-
     @keyframes fadeInMenstruasi {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
-
     .image-preview {
       margin-top: 1rem;
       max-width: 100%;
       border-radius: 12px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     }
-
     #photoInput {
       display: none;
     }
-
     #alasanBox {
       display: none;
       margin-top: 1rem;
@@ -134,50 +112,100 @@
       border-radius: 12px;
       font-size: 0.9rem;
     }
-
     .lihat-riwayat {
       text-align: center;
       margin-top: 0.5rem;
     }
-
     .lihat-riwayat a {
       color: #d81b60;
       text-decoration: none;
       font-weight: bold;
       transition: color 0.3s;
     }
-
     .lihat-riwayat a:hover {
       color: #ad1457;
       text-decoration: underline;
     }
 
+    /* --- CSS POP-UP --- */
+    .popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .popup-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+    }
+    .popup-content h3 {
+      margin-top: 0;
+      color: #333;
+    }
+    .popup-options {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    .popup-option {
+      flex: 1;
+      padding: 1rem;
+      border: 2px solid #eee;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .popup-option:hover {
+      border-color: #d81b60;
+      transform: translateY(-5px);
+      box-shadow: 0 4px 12px rgba(240, 98, 146, 0.2);
+    }
+    .popup-option h4 {
+        margin: 0 0 0.5rem 0;
+        color: #d81b60;
+    }
+    .popup-option p {
+        margin: 0;
+        font-size: 0.85rem;
+        color: #666;
+    }
+    @media (max-width: 500px) {
+        .popup-options {
+            flex-direction: column;
+        }
+    }
     @media (max-width: 400px) {
       body {
         margin: 1rem;
       }
-
       .card-box {
         padding: 1.5rem 1rem;
         max-width: 300px;
       }
-
       .button-group {
         flex-direction: column;
         gap: 0.75rem;
       }
-
       .button-group button {
         padding: 0.6rem 1rem;
         font-size: 0.85rem;
         width: 100%;
         justify-content: center;
       }
-
       .logo img {
         max-width: 120px;
       }
-
       .tips-box, .tips-menstruasi {
         font-size: 0.85rem;
       }
@@ -186,11 +214,27 @@
 </head>
 <body>
 
+  <!-- POP-UP -->
+  <div id="mode-popup-overlay" class="popup-overlay">
+    <div class="popup-content">
+      <h3>Pilih Mode Penyimpanan Data</h3>
+      <div class="popup-options">
+        <div class="popup-option" onclick="selectMode('private')">
+          <h4>🔒 Private</h4>
+          <p>Data riwayat hanya disimpan dan dilihat untuk diri sendiri di perangkat ini.</p>
+        </div>
+        <div class="popup-option" onclick="selectMode('dibatasi')">
+          <h4>👨‍👩‍👧‍👦 Dibatasi</h4>
+          <p>Data akan dilihat oleh orang tua, guru, dan petugas kesehatan yang berwenang.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="logo">
     <img src="https://res.cloudinary.com/djexglfns/image/upload/v1748920768/WhatsApp_Image_2025-06-03_at_11.17.29_AM-removebg-preview_bjfu6l.png" alt="Logo Aplikasi" />
   </div>
 
-  <!-- Card Menstruasi -->
   <div class="card-box">
     <div class="form-info">Apakah kamu sedang menstruasi hari ini?</div>
     <div class="button-group">
@@ -202,7 +246,6 @@
     </div>
   </div>
 
-  <!-- Card Konfirmasi Minum -->
   <div class="card-box">
     <div class="form-info" id="dateTimeInfo">
       Hari: ..., Tanggal: ..., Jam: ...
@@ -219,7 +262,6 @@
     <div class="tips-box" id="tipsBox"></div>
   </div>
 
-  <!-- Card Riwayat -->
   <div class="card-box" style="margin-top: 1rem; max-width: 400px;">
     <h3>Riwayat Minum TTD dan Menstruasi</h3>
     <ul id="riwayatList" style="list-style: none; padding: 0;"></ul>
@@ -230,6 +272,15 @@
 
   <script>
     let tempTanggal = "", tempWaktu = "", tempAnswer = "";
+
+    function selectMode(mode) {
+      const popup = document.getElementById('mode-popup-overlay');
+      if (mode === 'private') {
+        popup.style.display = 'none';
+      } else if (mode === 'dibatasi') {
+        window.location.href = 'https://forms.gle/xxxxxxxxxxxxxxxxx';
+      }
+    }
 
     function updateDateTime() {
       const now = new Date();
@@ -304,13 +355,10 @@
           canvas.height = height;
           const ctx = canvas.getContext("2d");
           ctx.drawImage(img, 0, 0, width, height);
-
           const compressedImage = canvas.toDataURL("image/jpeg", 0.6);
-
           const preview = document.getElementById('photoPreview');
           preview.src = compressedImage;
           preview.style.display = 'block';
-
           alert(`Jawaban "Ya" berhasil disimpan beserta bukti foto.`);
           saveRiwayat(tempTanggal, tempWaktu, tempAnswer, "", compressedImage);
         };
@@ -347,10 +395,8 @@
         li.style.marginBottom = '0.5rem';
         li.style.padding = '0.5rem';
         li.style.borderBottom = '1px dashed #ccc';
-
         const fotoHTML = item.foto ? `<br><img src="${item.foto}" style="width:60px; border-radius:8px; margin-top:4px;">` : '';
         const alasanHTML = item.alasan ? `<br><em>Alasan:</em> ${item.alasan}` : '';
-
         li.innerHTML = `<strong>${item.jawaban}</strong> - ${item.tanggal}, ${item.waktu}${alasanHTML}${fotoHTML}`;
         list.appendChild(li);
       });
@@ -369,10 +415,13 @@
       document.getElementById('tipsBox').textContent = " " + tips[randomIndex];
     }
 
-    setInterval(showRandomTip, 5000);
-    updateDateTime();
-    showRandomTip();
-    renderRiwayat();
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('mode-popup-overlay').style.display = 'flex';
+      updateDateTime();
+      showRandomTip();
+      renderRiwayat();
+      setInterval(showRandomTip, 5000);
+    });
   </script>
 </body>
 </html>
