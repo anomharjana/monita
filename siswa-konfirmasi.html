@@ -270,158 +270,159 @@
     </div>
   </div>
 
-  <script>
-    let tempTanggal = "", tempWaktu = "", tempAnswer = "";
+<script>
+  let tempTanggal = "", tempWaktu = "", tempAnswer = "";
 
-    function selectMode(mode) {
-      const popup = document.getElementById('mode-popup-overlay');
-      if (mode === 'private') {
-        popup.style.display = 'none';
-      } else if (mode === 'dibatasi') {
-        window.location.href = 'https://forms.gle/xxxxxxxxxxxxxxxxx';
-      }
+  function selectMode(mode) {
+    const popup = document.getElementById('mode-popup-overlay');
+    if (mode === 'private') {
+      popup.style.display = 'none';
+    } else if (mode === 'dibatasi') {
+      window.open('https://forms.gle/qac5YtLEj7F6zt4u9', '_blank');
+    }
+  }
+
+  function updateDateTime() {
+    const now = new Date();
+    const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+    const day = days[now.getDay()];
+    const date = now.toLocaleDateString('id-ID');
+    const time = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+    document.getElementById('dateTimeInfo').textContent = `Hari: ${day}, Tanggal: ${date}, Jam: ${time}`;
+  }
+
+  function submitMenstruasi(jawaban) {
+    const now = new Date();
+    const tanggal = now.toLocaleDateString('id-ID');
+    const waktu = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+    if (jawaban === 'Ya') {
+      document.getElementById('tipsMenstruasiBox').style.display = 'block';
+    } else {
+      document.getElementById('tipsMenstruasiBox').style.display = 'none';
     }
 
-    function updateDateTime() {
-      const now = new Date();
-      const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
-      const day = days[now.getDay()];
-      const date = now.toLocaleDateString('id-ID');
-      const time = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-      document.getElementById('dateTimeInfo').textContent = `Hari: ${day}, Tanggal: ${date}, Jam: ${time}`;
-    }
+    saveRiwayat(tanggal, waktu, `Menstruasi: ${jawaban}`, "", "");
+  }
 
-    function submitMenstruasi(jawaban) {
-      const now = new Date();
-      const tanggal = now.toLocaleDateString('id-ID');
-      const waktu = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+  function submitResponse(answer) {
+    const now = new Date();
+    tempTanggal = now.toLocaleDateString('id-ID');
+    tempWaktu = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+    tempAnswer = answer;
 
-      if (jawaban === 'Ya') {
-        document.getElementById('tipsMenstruasiBox').style.display = 'block';
+    if (answer === 'Ya') {
+      document.getElementById('photoInput').click();
+    } else {
+      const reason = prompt("Apa alasan kamu tidak minum tablet tambah darah hari ini?");
+      if (reason) {
+        document.getElementById('alasanText').textContent = reason;
+        document.getElementById('alasanBox').style.display = 'block';
+        alert(`Jawaban "Tidak" dan alasan berhasil disimpan.`);
+        saveRiwayat(tempTanggal, tempWaktu, answer, reason, "");
       } else {
-        document.getElementById('tipsMenstruasiBox').style.display = 'none';
-      }
-
-      saveRiwayat(tanggal, waktu, `Menstruasi: ${jawaban}`, "", "");
-    }
-
-    function submitResponse(answer) {
-      const now = new Date();
-      tempTanggal = now.toLocaleDateString('id-ID');
-      tempWaktu = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-      tempAnswer = answer;
-
-      if (answer === 'Ya') {
-        document.getElementById('photoInput').click();
-      } else {
-        const reason = prompt("Apa alasan kamu tidak minum tablet tambah darah hari ini?");
-        if (reason) {
-          document.getElementById('alasanText').textContent = reason;
-          document.getElementById('alasanBox').style.display = 'block';
-          alert(`Jawaban "Tidak" dan alasan berhasil disimpan.`);
-          saveRiwayat(tempTanggal, tempWaktu, answer, reason, "");
-        } else {
-          alert("Jawaban 'Tidak' dibatalkan karena tidak ada alasan yang diisi.");
-        }
+        alert("Jawaban 'Tidak' dibatalkan karena tidak ada alasan yang diisi.");
       }
     }
+  }
 
-    function handlePhotoChange(event) {
-      const file = event.target.files[0];
-      if (!file) return;
+  function handlePhotoChange(event) {
+    const file = event.target.files[0];
+    if (!file) return;
 
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const img = new Image();
-        img.onload = function () {
-          const canvas = document.createElement('canvas');
-          const maxSize = 240;
-          let width = img.width;
-          let height = img.height;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const img = new Image();
+      img.onload = function () {
+        const canvas = document.createElement('canvas');
+        const maxSize = 240;
+        let width = img.width;
+        let height = img.height;
 
-          if (width > height) {
-            if (width > maxSize) {
-              height *= maxSize / width;
-              width = maxSize;
-            }
-          } else {
-            if (height > maxSize) {
-              width *= maxSize / height;
-              height = maxSize;
-            }
+        if (width > height) {
+          if (width > maxSize) {
+            height *= maxSize / width;
+            width = maxSize;
           }
+        } else {
+          if (height > maxSize) {
+            width *= maxSize / height;
+            height = maxSize;
+          }
+        }
 
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext("2d");
-          ctx.drawImage(img, 0, 0, width, height);
-          const compressedImage = canvas.toDataURL("image/jpeg", 0.6);
-          const preview = document.getElementById('photoPreview');
-          preview.src = compressedImage;
-          preview.style.display = 'block';
-          alert(`Jawaban "Ya" berhasil disimpan beserta bukti foto.`);
-          saveRiwayat(tempTanggal, tempWaktu, tempAnswer, "", compressedImage);
-        };
-        img.src = e.target.result;
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+        const compressedImage = canvas.toDataURL("image/jpeg", 0.6);
+        const preview = document.getElementById('photoPreview');
+        preview.src = compressedImage;
+        preview.style.display = 'block';
+        alert(`Jawaban "Ya" berhasil disimpan beserta bukti foto.`);
+        saveRiwayat(tempTanggal, tempWaktu, tempAnswer, "", compressedImage);
       };
-      reader.readAsDataURL(file);
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function saveRiwayat(tanggal, waktu, jawaban, alasan = "", foto = "") {
+    let riwayat = JSON.parse(localStorage.getItem("riwayatTTD")) || [];
+    riwayat.unshift({ tanggal, waktu, jawaban, alasan, foto });
+
+    if (riwayat.length > 52) {
+      riwayat = riwayat.slice(0, 52);
     }
 
-    function saveRiwayat(tanggal, waktu, jawaban, alasan = "", foto = "") {
-      let riwayat = JSON.parse(localStorage.getItem("riwayatTTD")) || [];
-      riwayat.unshift({ tanggal, waktu, jawaban, alasan, foto });
+    localStorage.setItem("riwayatTTD", JSON.stringify(riwayat));
+    renderRiwayat();
+  }
 
-      if (riwayat.length > 52) {
-        riwayat = riwayat.slice(0, 52);
-      }
+  function renderRiwayat() {
+    const list = document.getElementById('riwayatList');
+    list.innerHTML = '';
+    const riwayat = JSON.parse(localStorage.getItem("riwayatTTD")) || [];
+    const tampil = riwayat.slice(0, 7);
 
-      localStorage.setItem("riwayatTTD", JSON.stringify(riwayat));
-      renderRiwayat();
+    if (tampil.length === 0) {
+      list.innerHTML = '<li>Tidak ada data riwayat.</li>';
+      return;
     }
 
-    function renderRiwayat() {
-      const list = document.getElementById('riwayatList');
-      list.innerHTML = '';
-      const riwayat = JSON.parse(localStorage.getItem("riwayatTTD")) || [];
-      const tampil = riwayat.slice(0, 7);
-
-      if (tampil.length === 0) {
-        list.innerHTML = '<li>Tidak ada data riwayat.</li>';
-        return;
-      }
-
-      tampil.forEach(item => {
-        const li = document.createElement('li');
-        li.style.marginBottom = '0.5rem';
-        li.style.padding = '0.5rem';
-        li.style.borderBottom = '1px dashed #ccc';
-        const fotoHTML = item.foto ? `<br><img src="${item.foto}" style="width:60px; border-radius:8px; margin-top:4px;">` : '';
-        const alasanHTML = item.alasan ? `<br><em>Alasan:</em> ${item.alasan}` : '';
-        li.innerHTML = `<strong>${item.jawaban}</strong> - ${item.tanggal}, ${item.waktu}${alasanHTML}${fotoHTML}`;
-        list.appendChild(li);
-      });
-    }
-
-    const tips = [
-      "💧 Minumlah tablet tambah darah setelah makan malam agar tidak mual.",
-      "📍 Simpan tablet di tempat yang terlihat agar tidak lupa.",
-      "🚫 Hindari teh atau kopi setelah minum tablet.",
-      "👭 Ajak teman minum bareng agar lebih semangat.",
-      "📆 Konsisten minum tiap minggu untuk tubuh yang kuat!"
-    ];
-
-    function showRandomTip() {
-      const randomIndex = Math.floor(Math.random() * tips.length);
-      document.getElementById('tipsBox').textContent = " " + tips[randomIndex];
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('mode-popup-overlay').style.display = 'flex';
-      updateDateTime();
-      showRandomTip();
-      renderRiwayat();
-      setInterval(showRandomTip, 5000);
+    tampil.forEach(item => {
+      const li = document.createElement('li');
+      li.style.marginBottom = '0.5rem';
+      li.style.padding = '0.5rem';
+      li.style.borderBottom = '1px dashed #ccc';
+      const fotoHTML = item.foto ? `<br><img src="${item.foto}" style="width:60px; border-radius:8px; margin-top:4px;">` : '';
+      const alasanHTML = item.alasan ? `<br><em>Alasan:</em> ${item.alasan}` : '';
+      li.innerHTML = `<strong>${item.jawaban}</strong> - ${item.tanggal}, ${item.waktu}${alasanHTML}${fotoHTML}`;
+      list.appendChild(li);
     });
-  </script>
+  }
+
+  const tips = [
+    "💧 Minumlah tablet tambah darah setelah makan malam agar tidak mual.",
+    "📍 Simpan tablet di tempat yang terlihat agar tidak lupa.",
+    "🚫 Hindari teh atau kopi setelah minum tablet.",
+    "👭 Ajak teman minum bareng agar lebih semangat.",
+    "📆 Konsisten minum tiap minggu untuk tubuh yang kuat!"
+  ];
+
+  function showRandomTip() {
+    const randomIndex = Math.floor(Math.random() * tips.length);
+    document.getElementById('tipsBox').textContent = " " + tips[randomIndex];
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('mode-popup-overlay').style.display = 'flex';
+    updateDateTime();
+    showRandomTip();
+    renderRiwayat();
+    setInterval(showRandomTip, 5000);
+  });
+</script>
+
 </body>
 </html>
